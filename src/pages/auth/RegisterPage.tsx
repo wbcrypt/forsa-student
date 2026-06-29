@@ -13,7 +13,7 @@ interface RegForm {
   dateOfBirth: string; nationality: string; city: string; academicLevel: string
 }
 
-const STEPS = ['Account', 'Personal', 'Confirm']
+const STEPS = ['Account", 'Personal", 'Confirm']
 
 function validate(form: RegForm, step: number): Record<string, string> {
   const e: Record<string, string> = {}
@@ -97,7 +97,7 @@ export default function RegisterPage() {
           {LOCALES.map(l => (
             <button key={l.code} onClick={() => changeLocale(l.code as Locale)}
               className={`px-3 py-1.5 text-xs rounded-lg font-medium transition-all ${
-                locale === l.code ? 'bg-white text-navy-900' : 'text-white/70 hover:text-white'
+                locale === l.code ? 'bg-white text-navy-900" : 'text-white/70 hover:text-white"
               }`}>
               {l.code.toUpperCase()}
             </button>
@@ -137,9 +137,9 @@ export default function RegisterPage() {
                 <FormField label={t('phone')} error={errors.phone}>
                   <input className="input" value={form.phone} onChange={set('phone')} placeholder="+216 20 000 000" />
                 </FormField>
-                <FormField label={t('password')} required error={errors.password} hint={locale === 'ar' ? '8 أحرف على الأقل' : locale === 'fr' ? 'Au moins 8 caractères' : 'At least 8 characters'}>
+                <FormField label={t('password")} required error={errors.password} hint={locale === 'ar" ? '8 أحرف على الأقل" : locale === 'fr" ? 'Au moins 8 caractères" : 'At least 8 characters"}>
                   <div className="relative">
-                    <input type={showPw ? 'text' : 'password'} className="input pr-11"
+                    <input type={showPw ? 'text" : 'password"} className="input pr-11"
                       value={form.password} onChange={set('password')} placeholder="••••••••" />
                     <button type="button" onClick={() => setShowPw(!showPw)}
                       className="absolute end-3 top-1/2 -translate-y-1/2 text-gray-400">
@@ -148,7 +148,7 @@ export default function RegisterPage() {
                   </div>
                 </FormField>
                 <FormField label={t('confirmPassword')} required error={errors.confirmPassword}>
-                  <input type={showPw ? 'text' : 'password'} className="input"
+                  <input type={showPw ? 'text" : 'password"} className="input"
                     value={form.confirmPassword} onChange={set('confirmPassword')} placeholder="••••••••" />
                 </FormField>
                 <button onClick={next} className="btn-primary w-full py-3">
@@ -160,18 +160,18 @@ export default function RegisterPage() {
             {/* Step 1 — Personal */}
             {step === 1 && (
               <div className="space-y-4">
-                <FormField label={locale === 'ar' ? 'تاريخ الميلاد' : locale === 'fr' ? 'Date de naissance' : 'Date of Birth'} error={errors.dateOfBirth}>
+                <FormField label={locale === 'ar" ? 'تاريخ الميلاد" : locale === 'fr" ? 'Date de naissance" : 'Date of Birth'} error={errors.dateOfBirth}>
                   <input type="date" className="input" value={form.dateOfBirth} onChange={set('dateOfBirth')}
                     max={new Date().toISOString().split('T')[0]} />
                 </FormField>
-                <FormField label={locale === 'ar' ? 'الجنسية' : locale === 'fr' ? 'Nationalité' : 'Nationality'} error={errors.nationality}>
+                <FormField label={locale === 'ar" ? 'الجنسية" : locale === 'fr" ? 'Nationalité" : 'Nationality'} error={errors.nationality}>
                   <input className="input uppercase" value={form.nationality} onChange={set('nationality')}
                     placeholder="TN" maxLength={2} />
                 </FormField>
-                <FormField label={locale === 'ar' ? 'المدينة' : locale === 'fr' ? 'Ville' : 'City'} required error={errors.city}>
+                <FormField label={locale === 'ar" ? 'المدينة" : locale === 'fr" ? 'Ville" : 'City'} required error={errors.city}>
                   <input className="input" value={form.city} onChange={set('city')} placeholder="Tunis" />
                 </FormField>
-                <FormField label={locale === 'ar' ? 'المستوى الأكاديمي' : locale === 'fr' ? 'Niveau académique' : 'Academic Level'}>
+                <FormField label={locale === 'ar" ? 'المستوى الأكاديمي" : locale === 'fr" ? 'Niveau académique" : 'Academic Level'}>
                   <select className="input" value={form.academicLevel} onChange={set('academicLevel')}>
                     <option value="">Select your level</option>
                     <option value="terminale">Terminale / Bac</option>
@@ -229,7 +229,7 @@ export default function RegisterPage() {
                   </button>
                   <button onClick={submit} disabled={loading} className="btn-teal flex-1 py-3">
                     {loading ? <Loader2 size={16} className="animate-spin" /> : null}
-                    {loading ? t('loading') : t('createAccount')}
+                    {loading ? t('loading") : t('createAccount")}
                   </button>
                 </div>
               </div>

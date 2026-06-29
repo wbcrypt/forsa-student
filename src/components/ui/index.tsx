@@ -4,27 +4,27 @@ import { AlertCircle, CheckCircle, X, Loader2, ChevronLeft, ChevronRight, Info }
 
 // ─── Status Badge ─────────────────────────────────────────────────────────────
 const statusMap: Record<string, { color: string; label: string }> = {
-  new_lead: { color: 'bg-gray-100 text-gray-600', label: 'Received' },
-  contacted: { color: 'bg-blue-50 text-blue-600', label: 'Contacted' },
-  waiting_for_documents: { color: 'bg-amber-50 text-amber-700', label: 'Documents Required' },
-  documents_received: { color: 'bg-blue-50 text-blue-700', label: 'Docs Received' },
-  under_review: { color: 'bg-purple-50 text-purple-700', label: 'Under Review' },
-  approved_level1: { color: 'bg-green-50 text-green-700', label: 'Approved ✓' },
-  approved_level2: { color: 'bg-green-50 text-green-700', label: 'Approved ✓' },
-  approved_level3: { color: 'bg-teal-50 text-teal-700', label: 'Referred' },
-  rejected: { color: 'bg-amber-50 text-amber-700', label: 'Bronze Member' },
-  on_hold: { color: 'bg-orange-50 text-orange-600', label: 'On Hold' },
-  contract_sent: { color: 'bg-indigo-50 text-indigo-600', label: 'Contract Sent' },
-  contract_signed: { color: 'bg-indigo-50 text-indigo-700', label: 'Contract Signed' },
-  active_student: { color: 'bg-teal-50 text-teal-700', label: 'Active' },
-  completed: { color: 'bg-gray-100 text-gray-600', label: 'Completed' },
-  paid: { color: 'bg-green-50 text-green-700', label: 'Paid' },
-  pending: { color: 'bg-amber-50 text-amber-700', label: 'Pending' },
-  late: { color: 'bg-red-50 text-red-600', label: 'Late' },
-  verified: { color: 'bg-green-50 text-green-700', label: 'Verified' },
-  uploaded: { color: 'bg-blue-50 text-blue-600', label: 'Uploaded' },
-  absent: { color: 'bg-gray-100 text-gray-500', label: 'Missing' },
-  under_review_doc: { color: 'bg-purple-50 text-purple-600', label: 'Under Review' },
+  new_lead: { color: 'bg-gray-100 text-gray-600", label: 'Received" },
+  contacted: { color: 'bg-blue-50 text-blue-600", label: 'Contacted" },
+  waiting_for_documents: { color: 'bg-amber-50 text-amber-700", label: 'Documents Required" },
+  documents_received: { color: 'bg-blue-50 text-blue-700", label: 'Docs Received" },
+  under_review: { color: 'bg-purple-50 text-purple-700", label: 'Under Review" },
+  approved_level1: { color: 'bg-green-50 text-green-700", label: 'Approved ✓" },
+  approved_level2: { color: 'bg-green-50 text-green-700", label: 'Approved ✓" },
+  approved_level3: { color: 'bg-teal-50 text-teal-700", label: 'Referred" },
+  rejected: { color: 'bg-amber-50 text-amber-700", label: 'Bronze Member" },
+  on_hold: { color: 'bg-orange-50 text-orange-600", label: 'On Hold" },
+  contract_sent: { color: 'bg-indigo-50 text-indigo-600", label: 'Contract Sent" },
+  contract_signed: { color: 'bg-indigo-50 text-indigo-700", label: 'Contract Signed" },
+  active_student: { color: 'bg-teal-50 text-teal-700", label: 'Active" },
+  completed: { color: 'bg-gray-100 text-gray-600", label: 'Completed" },
+  paid: { color: 'bg-green-50 text-green-700", label: 'Paid" },
+  pending: { color: 'bg-amber-50 text-amber-700", label: 'Pending" },
+  late: { color: 'bg-red-50 text-red-600", label: 'Late" },
+  verified: { color: 'bg-green-50 text-green-700", label: 'Verified" },
+  uploaded: { color: 'bg-blue-50 text-blue-600", label: 'Uploaded" },
+  absent: { color: 'bg-gray-100 text-gray-500", label: 'Missing" },
+  under_review_doc: { color: 'bg-purple-50 text-purple-600", label: 'Under Review" },
 }
 
 export function StatusBadge({ status, label }: { status: string; label?: string }) {
@@ -40,12 +40,12 @@ export function StatusBadge({ status, label }: { status: string; label?: string 
 export function Card({ children, className, padding = true }: {
   children: React.ReactNode; className?: string; padding?: boolean
 }) {
-  return <div className={clsx('card', padding && 'p-5', className)}>{children}</div>
+  return <div className={clsx('card", padding && 'p-5", className)}>{children}</div>
 }
 
 // ─── Alert ────────────────────────────────────────────────────────────────────
 export function Alert({ type = 'info', message, onClose }: {
-  type?: 'success' | 'error' | 'info' | 'warning'; message: string; onClose?: () => void
+  type?: 'success" | 'error" | 'info" | 'warning"; message: string; onClose?: () => void
 }) {
   const styles = {
     success: { bg: 'bg-green-50 border-green-200 text-green-800', Icon: CheckCircle },
@@ -144,13 +144,13 @@ export function StepProgress({ steps, current }: { steps: string[]; current: num
             </div>
             <p className={clsx(
               'text-xs mt-1 hidden sm:block',
-              i === current ? 'text-navy-800 font-medium' : 'text-gray-400'
+              i === current ? 'text-navy-800 font-medium" : 'text-gray-400"
             )}>{step}</p>
           </div>
           {i < steps.length - 1 && (
             <div className={clsx(
               'flex-1 h-0.5 mx-2 mb-4 transition-all',
-              i < current ? 'bg-teal-500' : 'bg-gray-200'
+              i < current ? 'bg-teal-500" : 'bg-gray-200"
             )} />
           )}
         </React.Fragment>

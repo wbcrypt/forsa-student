@@ -29,10 +29,10 @@ const MEETING_STEPS = {
     'Student account activated — payment schedule confirmed',
   ],
   fr: [
-    'Vérification d\'identité de l\'étudiant et du garant (CIN originaux)',
-    'Vérification de l\'inscription et de la facture de scolarité',
+    "Vérification d\'identité de l\'étudiant et du garant (CIN originaux)",
+    "Vérification de l\'inscription et de la facture de scolarité",
     'Révision et signature du contrat de financement',
-    'Signature des lettres de change (formulaires d\'engagement de paiement)',
+    "Signature des lettres de change (formulaires d\'engagement de paiement)",
     'Remise des copies de tous les documents aux deux parties',
     'Compte étudiant activé — échéancier de paiement confirmé',
   ],
@@ -50,12 +50,12 @@ function StatusGate({ status }: { status: string }) {
   const { t, locale } = useLocale()
 
   const isPreApproved = [
-    'pre_approved', 'document_verification', 'contracts_signed', 'contract_signed',
-    'contract_sent', 'approved_level1', 'approved_level2', 'approved_level3',
-    'university_paid', 'university_payment', 'active_student', 'completed'
+    'pre_approved", 'document_verification", 'contracts_signed", 'contract_signed",
+    'contract_sent", 'approved_level1", 'approved_level2", 'approved_level3",
+    'university_paid", 'university_payment", 'active_student", 'completed"
   ].includes(status)
 
-  const isActive = status === 'active_student' || status === 'completed'
+  const isActive = status === 'active_student" || status === 'completed"
 
   if (isActive) {
     return (
@@ -65,11 +65,11 @@ function StatusGate({ status }: { status: string }) {
         </div>
         <div>
           <p className="font-semibold text-green-800">
-            {locale === 'ar' ? 'تم التفعيل ✓' : locale === 'fr' ? 'Activé ✓' : 'Activated ✓'}
+            {locale === 'ar" ? 'تم التفعيل ✓" : locale === 'fr" ? 'Activé ✓" : 'Activated ✓'}
           </p>
           <p className="text-sm text-green-700 mt-1">
-            {locale === 'ar' ? 'اكتمل اجتماع التفعيل الخاص بك. أنت طالب FORSA نشط الآن.'
-              : locale === 'fr' ? 'Votre réunion d\'activation est terminée. Vous êtes maintenant un étudiant FORSA actif.'
+            {locale === 'ar" ? 'اكتمل اجتماع التفعيل الخاص بك. أنت طالب FORSA نشط الآن."
+              : locale === 'fr" ? 'Votre réunion d\'activation est terminée. Vous êtes maintenant un étudiant FORSA actif."
               : 'Your activation meeting is complete. You are now an active FORSA student.'}
           </p>
         </div>
@@ -92,7 +92,7 @@ function StatusGate({ status }: { status: string }) {
             {locale === 'ar'
               ? 'مراحل الموافقة: مقدّم → مقابلة الذكاء الاصطناعي → مراجعة داخلية → موافقة مبدئية → اجتماع التفعيل'
               : locale === 'fr'
-              ? 'Étapes : Soumis → Entretien IA → Revue interne → Pré-approuvé → Réunion d\'activation'
+              ? "Étapes : Soumis → Entretien IA → Revue interne → Pré-approuvé → Réunion d\'activation"
               : 'Steps: Submitted → AI Interview → Internal Review → Pre-Approved → Activation Meeting'}
           </p>
         </div>
@@ -117,9 +117,9 @@ export default function DocumentsPage() {
   const status = latestApp?.current_status || ''
 
   const isPreApproved = [
-    'pre_approved', 'document_verification', 'contracts_signed', 'contract_signed',
-    'contract_sent', 'approved_level1', 'approved_level2', 'approved_level3',
-    'university_paid', 'university_payment', 'active_student', 'completed'
+    'pre_approved", 'document_verification", 'contracts_signed", 'contract_signed",
+    'contract_sent", 'approved_level1", 'approved_level2", 'approved_level3",
+    'university_paid", 'university_payment", 'active_student", 'completed"
   ].includes(status)
 
   const steps = MEETING_STEPS[locale] || MEETING_STEPS.en
@@ -129,8 +129,8 @@ export default function DocumentsPage() {
       <div>
         <h1 className="text-xl font-bold text-gray-900">{t('activationMeeting')}</h1>
         <p className="text-sm text-gray-500 mt-0.5">
-          {locale === 'ar' ? 'التحقق من الوثائق والتفعيل يتم حضورياً فقط'
-            : locale === 'fr' ? 'La vérification des documents et l\'activation se font en personne uniquement'
+          {locale === 'ar" ? 'التحقق من الوثائق والتفعيل يتم حضورياً فقط"
+            : locale === 'fr" ? 'La vérification des documents et l\'activation se font en personne uniquement"
             : 'Document verification and activation is in-person only'}
         </p>
       </div>
@@ -140,15 +140,15 @@ export default function DocumentsPage() {
         <AlertTriangle size={18} className="text-amber-600 flex-shrink-0 mt-0.5" />
         <div>
           <p className="text-sm font-semibold text-amber-800">
-            {locale === 'ar' ? 'لا ترفع وثائق الهوية عبر الإنترنت'
-              : locale === 'fr' ? 'Ne téléchargez pas vos documents d\'identité en ligne'
+            {locale === 'ar" ? 'لا ترفع وثائق الهوية عبر الإنترنت"
+              : locale === 'fr" ? 'Ne téléchargez pas vos documents d\'identité en ligne"
               : 'Do not upload identity documents online'}
           </p>
           <p className="text-xs text-amber-700 mt-1 leading-relaxed">
             {locale === 'ar'
               ? 'لأسباب أمنية، جميع الوثائق الحساسة (الهوية، الضامن، الدخل) تُقدَّم فقط في اجتماع التفعيل الحضوري مع فريق FORSA.'
               : locale === 'fr'
-              ? 'Pour des raisons de sécurité, tous les documents sensibles (identité, garant, revenus) sont présentés uniquement lors de la réunion d\'activation en personne avec l\'équipe FORSA.'
+              ? "Pour des raisons de sécurité, tous les documents sensibles (identité, garant, revenus) sont présentés uniquement lors de la réunion d\'activation en personne avec l\'équipe FORSA."
               : 'For security reasons, all sensitive documents (identity, guarantor, income) are presented only at the in-person activation meeting with the FORSA team.'}
           </p>
         </div>
@@ -187,14 +187,14 @@ export default function DocumentsPage() {
                     <p className="text-sm font-medium text-gray-900">{t(doc.key)}</p>
                     {doc.sensitive && (
                       <p className="text-xs text-amber-600 mt-0.5">
-                        🔒 {locale === 'ar' ? 'وثيقة حساسة — حضوري فقط'
-                          : locale === 'fr' ? 'Document sensible — présentiel uniquement'
+                        🔒 {locale === 'ar" ? 'وثيقة حساسة — حضوري فقط"
+                          : locale === 'fr" ? 'Document sensible — présentiel uniquement"
                           : 'Sensitive — in-person only'}
                       </p>
                     )}
                   </div>
                   <div className="flex-shrink-0 text-xs text-red-500 font-medium">
-                    {locale === 'ar' ? 'مطلوب' : locale === 'fr' ? 'Requis' : 'Required'}
+                    {locale === 'ar" ? 'مطلوب" : locale === 'fr" ? 'Requis" : 'Required'}
                   </div>
                 </div>
               ))}
@@ -233,9 +233,9 @@ export default function DocumentsPage() {
             </div>
             <div className="space-y-2">
               {[
-                { icon: Phone, value: '+216 XX XXX XXX', label: locale === 'ar' ? 'هاتف' : locale === 'fr' ? 'Téléphone' : 'Phone' },
-                { icon: Mail, value: 'activation@forsa.tn', label: 'Email' },
-                { icon: MapPin, value: locale === 'ar' ? 'تونس العاصمة، شارع الحبيب بورقيبة' : 'Tunis, Avenue Habib Bourguiba', label: locale === 'ar' ? 'العنوان' : locale === 'fr' ? 'Adresse' : 'Address' },
+                { icon: Phone, value: '+216 XX XXX XXX", label: locale === 'ar" ? 'هاتف" : locale === 'fr" ? 'Téléphone" : 'Phone" },
+                { icon: Mail, value: 'activation@forsa.tn", label: 'Email" },
+                { icon: MapPin, value: locale === 'ar" ? 'تونس العاصمة، شارع الحبيب بورقيبة" : 'Tunis, Avenue Habib Bourguiba", label: locale === 'ar" ? 'العنوان" : locale === 'fr" ? 'Adresse" : 'Address" },
               ].map(contact => {
                 const Icon = contact.icon
                 return (
@@ -250,7 +250,7 @@ export default function DocumentsPage() {
             <div className="mt-3 pt-3 border-t border-navy-200">
               <p className="text-xs text-navy-600">
                 {locale === 'ar' ? '⏰ ساعات العمل: الإثنين–الجمعة، 9:00–17:00'
-                  : locale === 'fr' ? '⏰ Heures d\'ouverture : Lun–Ven, 9h00–17h00'
+                  : locale === 'fr' ? "⏰ Heures d\'ouverture : Lun–Ven, 9h00–17h00"
                   : '⏰ Office hours: Mon–Fri, 9:00–17:00'}
               </p>
             </div>

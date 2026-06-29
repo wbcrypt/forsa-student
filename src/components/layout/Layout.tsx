@@ -37,7 +37,7 @@ export default function Layout() {
                 <button key={l.code} onClick={() => changeLocale(l.code as Locale)}
                   className={clsx(
                     'px-2 py-1 text-xs rounded-md font-medium transition-all',
-                    locale === l.code ? 'bg-white text-navy-900 shadow-sm' : 'text-gray-500'
+                    locale === l.code ? 'bg-white text-navy-900 shadow-sm" : 'text-gray-500"
                   )}>
                   {l.code.toUpperCase()}
                 </button>
@@ -70,7 +70,7 @@ export default function Layout() {
               <NavLink key={item.path} to={item.path}
                 className={clsx(
                   'flex-1 flex flex-col items-center gap-1 py-3 px-1 transition-colors',
-                  isActive ? 'text-navy-800' : 'text-gray-400 hover:text-gray-600'
+                  isActive ? 'text-navy-800" : 'text-gray-400 hover:text-gray-600"
                 )}>
                 <div className={clsx(
                   'p-1.5 rounded-xl transition-all',
@@ -80,7 +80,7 @@ export default function Layout() {
                 </div>
                 <span className={clsx(
                   'text-[10px] font-medium',
-                  isActive ? 'text-navy-800' : 'text-gray-400'
+                  isActive ? 'text-navy-800" : 'text-gray-400"
                 )}>
                   {t(item.key)}
                 </span>

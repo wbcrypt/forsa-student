@@ -4,7 +4,7 @@ const TENANT_ID = import.meta.env.VITE_TENANT_ID || 'be694fc0-789a-4dec-b514-850
 
 const api = axios.create({
   baseURL: '/api/v1',
-  headers: { 'Content-Type': 'application/json' },
+  headers: { 'Content-Type": 'application/json" },
 })
 
 // Attach token
@@ -84,7 +84,7 @@ export const applicationApi = {
 
 // ─── Universities ─────────────────────────────────────────────────────────────
 export const universityApi = {
-  list: () => api.get('/universities', { params: { limit: 100, status: 'active' } }),
+  list: () => api.get('/universities", { params: { limit: 100, status: 'active" } }),
   getPrograms: (id: string) => api.get(`/universities/${id}/programs`),
 }
 

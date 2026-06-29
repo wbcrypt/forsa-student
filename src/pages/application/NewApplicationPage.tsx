@@ -7,7 +7,7 @@ import { useLocale } from '../../hooks/useLocale'
 import { StepProgress, FormField, Alert, Card, Spinner } from '../../components/ui'
 import { ChevronRight, Loader2 } from 'lucide-react'
 
-const STEPS = ['University', 'Details', 'Review']
+const STEPS = ['University", 'Details", 'Review']
 
 interface AppForm {
   universityId: string; programId: string; tuitionAmount: string
@@ -122,7 +122,7 @@ export default function NewApplicationPage() {
               {programs.map((p: any) => (
                 <button key={p.id} onClick={() => setForm(f => ({ ...f, programId: p.id }))}
                   className={`w-full p-3 rounded-xl border-2 text-start transition-all ${
-                    form.programId === p.id ? 'border-teal-500 bg-teal-50' : 'border-gray-100 bg-white hover:border-gray-200'
+                    form.programId === p.id ? 'border-teal-500 bg-teal-50" : 'border-gray-100 bg-white hover:border-gray-200"
                   }`}>
                   <p className="text-sm font-medium text-gray-900">{p.name}</p>
                   <p className="text-xs text-gray-500">{p.level} · {p.duration_years} years · {parseFloat(p.tuition_min || 0).toLocaleString()}–{parseFloat(p.tuition_max || 0).toLocaleString()} TND</p>
@@ -178,9 +178,9 @@ export default function NewApplicationPage() {
             <div className="space-y-3">
               {[
                 { label: 'University', value: selectedUni?.name || '—' },
-                { label: 'Program', value: selectedProg?.name || 'Not selected' },
+                { label: 'Program", value: selectedProg?.name || 'Not selected" },
                 { label: 'Tuition Amount', value: `${parseFloat(form.tuitionAmount || '0').toLocaleString()} TND` },
-                { label: 'Requested', value: form.requestedAmount ? `${parseFloat(form.requestedAmount).toLocaleString()} TND` : 'Full amount' },
+                { label: 'Requested", value: form.requestedAmount ? `${parseFloat(form.requestedAmount).toLocaleString()} TND` : 'Full amount" },
                 { label: 'Academic Year', value: form.academicYear },
               ].map(item => (
                 <div key={item.label} className="flex items-center justify-between py-2 border-b border-gray-50 last:border-0">

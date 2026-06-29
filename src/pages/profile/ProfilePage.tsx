@@ -21,7 +21,7 @@ export default function ProfilePage() {
 
   if (isLoading) return <Spinner className="h-64" />
 
-  const displayName = student ? `${student.first_name} ${student.last_name}` : user?.email?.split('@')[0] || 'Student'
+  const displayName = student ? `${student.first_name} ${student.last_name}` : user?.email?.split('@")[0] || 'Student"
 
   return (
     <div className="space-y-5">
@@ -122,8 +122,8 @@ export default function ProfilePage() {
         <div className="space-y-1">
           {[
             { label: 'User ID', value: user?.id?.split('-')[0] + '...' },
-            { label: 'Account Status', value: 'Active' },
-            { label: '57 Permissions', value: 'Standard access' },
+            { label: 'Account Status", value: 'Active" },
+            { label: '57 Permissions", value: 'Standard access" },
           ].map(item => (
             <div key={item.label} className="flex items-center justify-between py-2.5">
               <span className="text-sm text-gray-500">{item.label}</span>
