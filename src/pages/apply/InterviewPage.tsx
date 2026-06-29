@@ -191,7 +191,7 @@ export default function InterviewPage() {
         setTimeout(() => completeInterview(data, finalMessages), 2500)
       }
     } catch {
-      setError(lang === 'ar' ? 'فشل الإرسال. يرجى المحاولة مرة أخرى.' : lang === 'fr' ? "Échec de l'envoi. Réessayez." : 'Send failed. Please retry.")
+      setError(lang === 'ar' ? 'فشل الإرسال. يرجى المحاولة مرة أخرى.' : lang === 'fr' ? "Échec de l'envoi. Réessayez." : 'Send failed. Please retry.')
     } finally {
       setLoading(false)
     }
