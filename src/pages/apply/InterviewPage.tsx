@@ -191,7 +191,7 @@ export default function InterviewPage() {
         setTimeout(() => completeInterview(data, finalMessages), 2500)
       }
     } catch {
-      setError(lang === 'ar' ? 'فشل الإرسال. يرجى المحاولة مرة أخرى.' : lang === 'fr' ? "Échec de l'envoi. Réessayez." : 'Send failed. Please retry.')
+      setError(lang === 'ar' ? 'فشل الإرسال. يرجى المحاولة مرة أخرى.' : lang === 'fr' ? "Échec de l'envoi. Réessayez." : 'Send failed. Please retry.")
     } finally {
       setLoading(false)
     }
@@ -249,7 +249,7 @@ export default function InterviewPage() {
     completing: { en: 'Submitting your application…', fr: 'Envoi de votre dossier…', ar: 'جاري إرسال طلبك…' },
     doneTitle: { en: 'Interview Complete!', fr: 'Entretien terminé !', ar: 'اكتملت المقابلة!' },
     doneDesc: { en: 'Our team will review your application and determine your FORSA pathway. Every applicant becomes part of the FORSA community.', fr: 'Notre équipe examinera votre dossier et déterminera votre voie FORSA. Chaque candidat fait partie de la communauté FORSA.', ar: 'سيراجع فريقنا طلبك ويحدد مسارك في FORSA. كل متقدم يصبح جزءاً من مجتمع FORSA.' },
-    doneNotice: { en: 'Every FORSA applicant is placed in the most suitable pathway: Gold, Silver, or Bronze. Bronze members receive full ecosystem access and are prioritised when new financing capacity opens.', fr: "Chaque candidat FORSA est placé dans la voie la plus adaptée : Gold, Silver ou Bronze. Les membres Bronze bénéficient d"un accès complet à l'écosystème et sont prioritaires à l'ouverture de nouvelles capacités de financement.", ar: 'يُوضع كل متقدم في FORSA في المسار الأنسب له: ذهبي أو فضي أو برونزي. يحصل الأعضاء البرونزيون على وصول كامل للمنظومة وأولوية عند فتح طاقة تمويل جديدة.' },
+    doneNotice: { en: 'Every FORSA applicant is placed in the most suitable pathway: Gold, Silver, or Bronze. Bronze members receive full ecosystem access and are prioritised when new financing capacity opens.', fr: "Chaque candidat FORSA est placé dans la voie la plus adaptée : Gold, Silver ou Bronze. Les membres Bronze bénéficient d'accès complet à l'écosystème et sont prioritaires à l'ouverture de nouvelles capacités de financement.", ar: 'يُوضع كل متقدم في FORSA في المسار الأنسب له: ذهبي أو فضي أو برونزي. يحصل الأعضاء البرونزيون على وصول كامل للمنظومة وأولوية عند فتح طاقة تمويل جديدة.' },
     goHome: { en: 'Return to my account', fr: 'Retourner à mon compte', ar: 'العودة إلى حسابي' },
     title: { en: 'FORSA Interview', fr: 'Entretien FORSA', ar: 'مقابلة FORSA' },
     subtitle: { en: 'AI Assistant · Does not make decisions', fr: 'Assistant IA · Ne prend pas de décisions', ar: 'مساعد ذكاء اصطناعي · لا يتخذ قرارات' },
@@ -263,7 +263,7 @@ export default function InterviewPage() {
       <div className="w-16 h-16 bg-teal-500/10 rounded-2xl flex items-center justify-center">
         <Loader2 size={28} className="text-teal-500 animate-spin" />
       </div>
-      <p className="text-gray-500 text-sm">{l('preparing')}</p>
+      <p className="text-gray-500 text-sm">{l('preparing")}</p>
     </div>
   )
 
@@ -272,7 +272,7 @@ export default function InterviewPage() {
       <div className="w-16 h-16 bg-navy-800/10 rounded-2xl flex items-center justify-center">
         <Loader2 size={28} className="text-navy-800 animate-spin" />
       </div>
-      <p className="text-gray-700 font-medium">{l('completing')}</p>
+      <p className="text-gray-700 font-medium">{l('completing")}</p>
     </div>
   )
 
@@ -282,13 +282,13 @@ export default function InterviewPage() {
         <CheckCircle size={40} className="text-green-500" />
       </div>
       <div>
-        <h2 className="text-2xl font-bold text-gray-900">{l('doneTitle')}</h2>
-        <p className="text-gray-500 text-sm mt-2 max-w-sm leading-relaxed">{l('doneDesc')}</p>
+        <h2 className="text-2xl font-bold text-gray-900">{l('doneTitle")}</h2>
+        <p className="text-gray-500 text-sm mt-2 max-w-sm leading-relaxed">{l('doneDesc")}</p>
       </div>
       <div className="bg-navy-50 border border-navy-100 rounded-2xl p-4 text-sm text-navy-700 max-w-sm leading-relaxed">
         {l('doneNotice')}
       </div>
-      <button onClick={() => navigate('/')} className="btn-teal py-3 px-8">{l('goHome')}</button>
+      <button onClick={() => navigate('/')} className="btn-teal py-3 px-8">{l('goHome")}</button>
     </div>
   )
 
@@ -301,10 +301,10 @@ export default function InterviewPage() {
         </div>
         <div>
           <p className="text-sm font-semibold text-gray-900">{l('title')}</p>
-          <p className="text-xs text-gray-400">{l('subtitle')}</p>
+          <p className="text-xs text-gray-400">{l('subtitle")}</p>
         </div>
         <div className="ms-auto flex items-center gap-2">
-          {isDemo && <span className="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-medium">{l('demoLabel')}</span>}
+          {isDemo && <span className="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-medium">{l('demoLabel")}</span>}
           <span className="text-xs bg-gray-100 text-gray-500 px-2 py-1 rounded-full">{l('turn')} {turnCount}/8</span>
         </div>
       </div>
@@ -331,7 +331,7 @@ export default function InterviewPage() {
             </div>
             {msg.role === 'user' && (
               <div className="w-8 h-8 bg-teal-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                <span className="text-white text-xs font-bold">{data?.firstName?.[0] || 'S'}</span>
+                <span className="text-white text-xs font-bold">{data?.firstName?.[0] || 'S"}</span>
               </div>
             )}
           </div>
@@ -343,7 +343,7 @@ export default function InterviewPage() {
             </div>
             <div className="bg-gray-100 rounded-2xl rounded-tl-sm px-4 py-3">
               <div className="flex items-center gap-2 text-xs text-gray-400">
-                <Loader2 size={12} className="animate-spin" /> {l('thinking')}
+                <Loader2 size={12} className="animate-spin" /> {l('thinking")}
               </div>
             </div>
           </div>
@@ -371,7 +371,7 @@ export default function InterviewPage() {
                   completionTriggered.current = true
                   completeInterview(data, messages)
                 }
-              }} className="text-xs text-gray-400 hover:text-gray-600 underline">{l('endBtn')}</button>
+              }} className="text-xs text-gray-400 hover:text-gray-600 underline">{l('endBtn")}</button>
             </div>
           )}
         </div>
