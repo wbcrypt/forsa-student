@@ -132,7 +132,7 @@ export default function ApplyPage() {
           {/* Language first */}
           <Card>
             <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
-              {locale === 'ar' ? 'لغة المقابلة' : locale === 'fr' ? "Langue de l\'entretien" : 'Interview Language'}
+              {locale === 'ar' ? 'لغة المقابلة' : locale === 'fr' ? "Langue de l'entretien" : 'Interview Language'}
             </p>
             <div className="grid grid-cols-3 gap-2">
               {LOCALES.map(l => (
@@ -211,7 +211,7 @@ export default function ApplyPage() {
               </FormField>
 
               <div className="grid grid-cols-2 gap-3">
-                <FormField label={locale === 'ar' ? 'سنة الدراسة' : locale === 'fr' ? "Année d\'étude" : 'Year of Study'}>
+                <FormField label={locale === 'ar' ? 'سنة الدراسة' : locale === 'fr' ? "Année d'étude" : 'Year of Study'}>
                   <select className="input" value={data.yearOfStudy} onChange={set('yearOfStudy')}>
                     <option value="">Select</option>
                     <option value="1">Year 1</option>
@@ -260,7 +260,7 @@ export default function ApplyPage() {
                   <option value="">Select</option>
                   <option value="parent">{locale === 'ar' ? 'أحد الوالدين' : locale === 'fr' ? 'Un parent' : 'Parent'}</option>
                   <option value="self_student">{locale === 'ar' ? 'أنا (دخل الطالب)' : locale === 'fr' ? 'Moi-même (étudiant)' : 'Myself (student income)'}</option>
-                  <option value="scholarship">{locale === 'ar' ? 'منحة دراسية' : locale === 'fr' ? "Bourse d\'études" : 'Scholarship'}</option>
+                  <option value="scholarship">{locale === 'ar' ? 'منحة دراسية' : locale === 'fr' ? "Bourse d'études" : 'Scholarship'}</option>
                   <option value="family">{locale === 'ar' ? 'أفراد الأسرة' : locale === 'fr' ? 'Famille' : 'Family members'}</option>
                   <option value="savings">{locale === 'ar' ? 'المدخرات' : locale === 'fr' ? 'Épargne' : 'Savings'}</option>
                   <option value="other">{locale === 'ar' ? 'أخرى' : locale === 'fr' ? 'Autre' : 'Other'}</option>
@@ -345,12 +345,12 @@ function ConsentGate({ data, onBack }: { data: Phase1Data; onBack: () => void })
     {
       key: 'privacy',
       label: { en: 'Privacy Policy', fr: 'Politique de confidentialité', ar: 'سياسة الخصوصية' },
-      desc: { en: 'I have read and agree to the FORSA Privacy Policy regarding how my personal data is collected and used.', fr: "J\'ai lu et accepte la Politique de confidentialité de FORSA concernant la collecte et l\'utilisation de mes données personnelles.', ar: 'لقد قرأت ووافقت على سياسة خصوصية FORSA المتعلقة بكيفية جمع بياناتي الشخصية واستخدامها.' }
+      desc: { en: 'I have read and agree to the FORSA Privacy Policy regarding how my personal data is collected and used.', fr: "J'ai lu et accepte la Politique de confidentialité de FORSA concernant la collecte et l'utilisation de mes données personnelles.', ar: 'لقد قرأت ووافقت على سياسة خصوصية FORSA المتعلقة بكيفية جمع بياناتي الشخصية واستخدامها.' }
     },
     {
       key: 'terms',
-      label: { en: 'Terms of Service', fr: "Conditions d\'utilisation", ar: 'شروط الخدمة' },
-      desc: { en: 'I accept the FORSA Terms of Service and understand the financing conditions.', fr: "J\'accepte les Conditions d\'utilisation de FORSA et comprends les conditions de financement.', ar: 'أقبل شروط خدمة FORSA وأفهم شروط التمويل.' }
+      label: { en: 'Terms of Service', fr: "Conditions d'utilisation", ar: 'شروط الخدمة' },
+      desc: { en: 'I accept the FORSA Terms of Service and understand the financing conditions.', fr: "J'accepte les Conditions d'utilisation de FORSA et comprends les conditions de financement.', ar: 'أقبل شروط خدمة FORSA وأفهم شروط التمويل.' }
     },
     {
       key: 'dataProcessing',
@@ -359,19 +359,19 @@ function ConsentGate({ data, onBack }: { data: Phase1Data; onBack: () => void })
     },
     {
       key: 'aiNotice',
-      label: { en: 'AI Interview Notice', fr: "Notice sur l\'entretien IA", ar: 'إشعار المقابلة بالذكاء الاصطناعي' },
-      desc: { en: 'I understand that the following interview is conducted by an AI assistant. The AI does NOT approve or reject applications. FORSA places every applicant in the most suitable pathway (Gold, Silver, or Bronze). All pathway decisions are made exclusively by the FORSA team.', fr: "Je comprends que l\'entretien suivant est conduit par un assistant IA. L\'IA n\'approuve NI ne rejette les demandes. Toutes les décisions finales sont prises exclusivement par l\'équipe FORSA. Une pré-approbation n\'est pas une approbation finale.', ar: 'أفهم أن المقابلة التالية يُجريها مساعد ذكاء اصطناعي. لا يوافق الذكاء الاصطناعي على الطلبات ولا يرفضها. تضع FORSA كل متقدم في المسار الأنسب له (ذهبي أو فضي أو برونزي). جميع قرارات المسار يتخذها فريق FORSA حصراً.' }
+      label: { en: 'AI Interview Notice', fr: "Notice sur l'entretien IA", ar: 'إشعار المقابلة بالذكاء الاصطناعي' },
+      desc: { en: 'I understand that the following interview is conducted by an AI assistant. The AI does NOT approve or reject applications. FORSA places every applicant in the most suitable pathway (Gold, Silver, or Bronze). All pathway decisions are made exclusively by the FORSA team.', fr: "Je comprends que l'entretien suivant est conduit par un assistant IA. L'IA n'approuve NI ne rejette les demandes. Toutes les décisions finales sont prises exclusivement par l'équipe FORSA. Une pré-approbation n'est pas une approbation finale.', ar: 'أفهم أن المقابلة التالية يُجريها مساعد ذكاء اصطناعي. لا يوافق الذكاء الاصطناعي على الطلبات ولا يرفضها. تضع FORSA كل متقدم في المسار الأنسب له (ذهبي أو فضي أو برونزي). جميع قرارات المسار يتخذها فريق FORSA حصراً.' }
     },
     {
       key: 'truthful',
       label: { en: 'Declaration of Truthfulness', fr: 'Déclaration de véracité', ar: 'إقرار بصحة المعلومات' },
-      desc: { en: 'I declare that all information I have provided and will provide during this application is truthful, accurate, and complete to the best of my knowledge.', fr: "Je déclare que toutes les informations que j\'ai fournies et fournirai lors de cette demande sont véridiques, exactes et complètes au meilleur de ma connaissance.', ar: 'أُقر بأن جميع المعلومات التي قدمتها وسأقدمها خلال هذا الطلب صحيحة ودقيقة وكاملة في حدود علمي.' }
+      desc: { en: 'I declare that all information I have provided and will provide during this application is truthful, accurate, and complete to the best of my knowledge.', fr: "Je déclare que toutes les informations que j'ai fournies et fournirai lors de cette demande sont véridiques, exactes et complètes au meilleur de ma connaissance.', ar: 'أُقر بأن جميع المعلومات التي قدمتها وسأقدمها خلال هذا الطلب صحيحة ودقيقة وكاملة في حدود علمي.' }
     },
   ]
 
   const AI_NOTICE: Record<Locale, string> = {
     en: '⚡ Important: The AI interview helps us understand your readiness. Every applicant joins the FORSA ecosystem — Gold, Silver, or Bronze. The AI does not decide your pathway. Our team does.',
-    fr: "⚡ Important : L\'entretien IA nous aide à comprendre votre préparation. Chaque candidat rejoint l\'écosystème FORSA — Gold, Silver ou Bronze. L\'IA ne décide pas de votre voie. Notre équipe le fait.',
+    fr: "⚡ Important : L'entretien IA nous aide à comprendre votre préparation. Chaque candidat rejoint l'écosystème FORSA — Gold, Silver ou Bronze. L'IA ne décide pas de votre voie. Notre équipe le fait.',
     ar: '⚡ هام: تساعدنا مقابلة الذكاء الاصطناعي على فهم مدى استعدادك. كل متقدم ينضم إلى منظومة FORSA — ذهبي أو فضي أو برونزي. الذكاء الاصطناعي لا يقرر مسارك. فريقنا يفعل ذلك.',
   }
 
@@ -423,7 +423,7 @@ function ConsentGate({ data, onBack }: { data: Phase1Data; onBack: () => void })
           disabled={!allConsented}
           className={clsx('flex-1 py-3 rounded-xl font-semibold text-sm transition-all',
             allConsented ? 'bg-teal-500 text-white hover:bg-teal-600' : 'bg-gray-100 text-gray-400 cursor-not-allowed')}>
-          {locale === 'ar' ? 'ابدأ المقابلة' : locale === 'fr' ? "Commencer l\'entretien" : 'Start Interview'} →
+          {locale === 'ar' ? 'ابدأ المقابلة' : locale === 'fr' ? "Commencer l'entretien" : 'Start Interview'} →
         </button>
       </div>
     </div>
