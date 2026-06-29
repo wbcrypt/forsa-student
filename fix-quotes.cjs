@@ -66,5 +66,4 @@ for (const file of files) {
   }
 }
 console.log(`Done. Fixed ${total} files.`)
-# fixed
 # v2
