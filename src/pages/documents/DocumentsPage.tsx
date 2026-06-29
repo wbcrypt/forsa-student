@@ -29,10 +29,10 @@ const MEETING_STEPS = {
     'Student account activated — payment schedule confirmed',
   ],
   fr: [
-    'Vérification d'identité de l'étudiant et du garant (CIN originaux)',
-    'Vérification de l'inscription et de la facture de scolarité',
+    "Vérification d'identité de l'étudiant et du garant (CIN originaux)",
+    "Vérification de l'inscription et de la facture de scolarité",
     'Révision et signature du contrat de financement',
-    'Signature des lettres de change (formulaires d'engagement de paiement)',
+    "Signature des lettres de change (formulaires d'engagement de paiement)",
     'Remise des copies de tous les documents aux deux parties',
     'Compte étudiant activé — échéancier de paiement confirmé',
   ],
@@ -148,7 +148,7 @@ export default function DocumentsPage() {
             {locale === 'ar'
               ? 'لأسباب أمنية، جميع الوثائق الحساسة (الهوية، الضامن، الدخل) تُقدَّم فقط في اجتماع التفعيل الحضوري مع فريق FORSA.'
               : locale === 'fr'
-              ? "Pour des raisons de sécurité, tous les documents sensibles (identité, garant, revenus) sont présentés uniquement lors de la réunion d'activation en personne avec l'équipe FORSA.'
+              ? "Pour des raisons de sécurité, tous les documents sensibles (identité, garant, revenus) sont présentés uniquement lors de la réunion d"activation en personne avec l'équipe FORSA."
               : 'For security reasons, all sensitive documents (identity, guarantor, income) are presented only at the in-person activation meeting with the FORSA team.'}
           </p>
         </div>

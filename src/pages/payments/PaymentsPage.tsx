@@ -141,7 +141,7 @@ export default function PaymentsPage() {
       <h1 className="text-xl font-bold text-gray-900">{t('paymentCenter')}</h1>
       <EmptyState icon={CreditCard} title={locale === 'ar' ? 'لا يوجد جدول دفع بعد' : locale === 'fr' ? "Pas encore d'échéancier" : 'No payment schedule yet'}
         description={locale === 'ar' ? 'سيُنشأ جدول الدفع بعد اكتمال اجتماع التفعيل وتوقيع العقد.'
-          : locale === 'fr' ? "L'échéancier de paiement sera généré après la réunion d'activation et la signature du contrat.'
+          : locale === 'fr' ? "L"échéancier de paiement sera généré après la réunion d'activation et la signature du contrat."
           : 'The payment schedule will be generated after your activation meeting and contract signing.'} />
     </div>
   )
@@ -332,7 +332,7 @@ export default function PaymentsPage() {
                     'أذكر مرجع دفعك الفريد كسبب للإيداع',
                     'احتفظ بإيصال الإيداع وارفعه أدناه',
                   ] : locale === 'fr' ? [
-                    'Rendez-vous dans n'agence Banque Zitouna',
+                    "Rendez-vous dans n'agence Banque Zitouna",
                     'Demandez un dépôt sur le compte FORSA Tunisia',
                     'RIB : 20500000001234567890',
                     'Indiquez votre référence de paiement unique comme motif',
