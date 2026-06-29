@@ -29,10 +29,10 @@ const MEETING_STEPS = {
     'Student account activated — payment schedule confirmed',
   ],
   fr: [
-    "Vérification d'identité de l"étudiant et du garant (CIN originaux)",
-    "Vérification de l"inscription et de la facture de scolarité",
+    "Vérification d'identité de l'étudiant et du garant (CIN originaux)",
+    "Vérification de l'inscription et de la facture de scolarité",
     'Révision et signature du contrat de financement',
-    "Signature des lettres de change (formulaires d"engagement de paiement)",
+    "Signature des lettres de change (formulaires d'engagement de paiement)",
     'Remise des copies de tous les documents aux deux parties',
     'Compte étudiant activé — échéancier de paiement confirmé',
   ],
