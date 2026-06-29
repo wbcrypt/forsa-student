@@ -32,12 +32,12 @@ export default function HomePage() {
     enabled: !!user?.id,
   })
 
-  const firstName = student?.first_name || user?.email?.split('@")[0] || 'Student"
+  const firstName = student?.first_name || user?.email?.split('@')[0] || 'Student'
   const latestApp = applications?.[0]
   const aggregateScore = score?.aggregate_score || student?.aggregate_score
 
   const getStatusIcon = (status: string) => {
-    if (['approved_level1", 'approved_level2", 'approved_level3", 'active_student"].includes(status))
+    if (['approved_level1', 'approved_level2', 'approved_level3', 'active_student'].includes(status))
       return <CheckCircle size={16} className="text-green-500" />
     if (['rejected'].includes(status))
       return <AlertTriangle size={16} className="text-red-500" />
@@ -82,19 +82,19 @@ export default function HomePage() {
             {/* Status timeline mini */}
             <div className="flex items-center gap-1.5 mb-4">
               {[
-                { s: 'new_lead", label: 'Received" },
-                { s: 'under_review", label: 'Review" },
-                { s: 'approved_level2", label: 'Decision" },
-                { s: 'active_student", label: 'Active" },
+                { s: 'new_lead', label: 'Received' },
+                { s: 'under_review', label: 'Review' },
+                { s: 'approved_level2', label: 'Decision' },
+                { s: 'active_student', label: 'Active' },
               ].map((stage, i) => {
-                const statuses = ['new_lead", 'contacted", 'waiting_for_documents", 'documents_received", 'under_review", 'approved_level1", 'approved_level2", 'approved_level3", 'contract_sent", 'contract_signed", 'active_student", 'completed"]
+                const statuses = ['new_lead', 'contacted', 'waiting_for_documents', 'documents_received', 'under_review', 'approved_level1', 'approved_level2', 'approved_level3', 'contract_sent', 'contract_signed', 'active_student', 'completed']
                 const currentIdx = statuses.indexOf(latestApp.current_status)
                 const stageIdx = statuses.indexOf(stage.s)
                 const done = currentIdx >= stageIdx
                 return (
                   <div key={stage.s} className="flex items-center flex-1">
-                    <div className={`w-2 h-2 rounded-full flex-shrink-0 ${done ? 'bg-teal-500" : 'bg-gray-200"}`} />
-                    {i < 3 && <div className={`flex-1 h-0.5 ${done ? 'bg-teal-500" : 'bg-gray-200"}`} />}
+                    <div className={`w-2 h-2 rounded-full flex-shrink-0 ${done ? 'bg-teal-500' : 'bg-gray-200'}`} />
+                    {i < 3 && <div className={`flex-1 h-0.5 ${done ? 'bg-teal-500' : 'bg-gray-200'}`} />}
                   </div>
                 )
               })}
@@ -102,7 +102,7 @@ export default function HomePage() {
 
             <div className="flex items-center justify-between">
               <p className="text-sm text-gray-500">
-                {parseFloat(latestApp.tuition_amount || '0").toLocaleString()} {latestApp.currency || 'TND"}
+                {parseFloat(latestApp.tuition_amount || '0').toLocaleString()} {latestApp.currency || 'TND'}
               </p>
               <span className="text-xs text-navy-700 font-medium flex items-center gap-1">
                 {t('checkStatus')} <ChevronRight size={14} />
@@ -128,9 +128,9 @@ export default function HomePage() {
       {/* Quick actions */}
       <div className="grid grid-cols-3 gap-3">
         {[
-          { icon: Upload, label: t('documents'), path: '/documents", color: 'bg-blue-50 text-blue-600" },
-          { icon: CreditCard, label: t('payments'), path: '/payments", color: 'bg-green-50 text-green-600" },
-          { icon: Bell, label: t('notifications'), path: '/notifications", color: 'bg-purple-50 text-purple-600" },
+          { icon: Upload, label: t('documents'), path: '/documents', color: 'bg-blue-50 text-blue-600' },
+          { icon: CreditCard, label: t('payments'), path: '/payments', color: 'bg-green-50 text-green-600' },
+          { icon: Bell, label: t('notifications'), path: '/notifications', color: 'bg-purple-50 text-purple-600' },
         ].map(action => {
           const Icon = action.icon
           return (
@@ -179,8 +179,8 @@ function RecentPayments({ applicationId }: { applicationId: string }) {
           className={`flex items-center justify-between px-4 py-3 ${i < installments.length - 1 ? 'border-b border-gray-50' : ''}`}>
           <div className="flex items-center gap-3">
             <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-xs font-bold ${
-              inst.status === 'paid" ? 'bg-green-50 text-green-600" :
-              inst.status === 'late" ? 'bg-red-50 text-red-600" :
+              inst.status === 'paid' ? 'bg-green-50 text-green-600' :
+              inst.status === 'late' ? 'bg-red-50 text-red-600' :
               'bg-gray-100 text-gray-500'
             }`}>
               {inst.sequence_number || inst.sequence}

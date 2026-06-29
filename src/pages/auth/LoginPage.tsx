@@ -25,7 +25,7 @@ export default function LoginPage() {
       navigate('/')
     } catch (err: any) {
       const msg = err?.response?.data?.message
-      setError(msg === 'Invalid credentials" ? 'Incorrect email or password. Please try again." : msg || 'Login failed. Please try again.')
+      setError(msg === 'Invalid credentials' ? 'Incorrect email or password. Please try again.' : msg || 'Login failed. Please try again.')
     } finally { setLoading(false) }
   }
 
@@ -43,7 +43,7 @@ export default function LoginPage() {
           {LOCALES.map(l => (
             <button key={l.code} onClick={() => changeLocale(l.code as Locale)}
               className={`px-3 py-1.5 text-xs rounded-lg font-medium transition-all ${
-                locale === l.code ? 'bg-white text-navy-900" : 'text-white/70 hover:text-white"
+                locale === l.code ? 'bg-white text-navy-900' : 'text-white/70 hover:text-white'
               }`}>
               {l.code.toUpperCase()}
             </button>
@@ -81,7 +81,7 @@ export default function LoginPage() {
                   </Link>
                 </div>
                 <div className="relative">
-                  <input type={showPassword ? 'text" : 'password"} value={password}
+                  <input type={showPassword ? 'text' : 'password'} value={password}
                     onChange={e => setPassword(e.target.value)}
                     className="input pr-11" placeholder="••••••••" autoComplete="current-password" />
                   <button type="button" onClick={() => setShowPassword(!showPassword)}
@@ -91,7 +91,7 @@ export default function LoginPage() {
                 </div>
               </div>
               <button type="submit" disabled={loading} className="btn-primary w-full py-3 mt-2 text-base">
-                {loading ? <><Loader2 size={16} className="animate-spin" /> {t('loading")}</> : t('signIn")}
+                {loading ? <><Loader2 size={16} className="animate-spin" /> {t('loading')}</> : t('signIn')}
               </button>
             </form>
           </div>

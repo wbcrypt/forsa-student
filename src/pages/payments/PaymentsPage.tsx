@@ -61,7 +61,7 @@ function PaymentMethodCard({ icon: Icon, title, badge, children, color }: {
 }) {
   const [open, setOpen] = useState(false)
   return (
-    <Card className={clsx('border-2 transition-all", open ? 'border-navy-300" : 'border-gray-100')}>
+    <Card className={clsx('border-2 transition-all', open ? 'border-navy-300' : 'border-gray-100')}>
       <button onClick={() => setOpen(!open)} className="w-full flex items-center gap-3 text-start">
         <div className={clsx('w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0', color)}>
           <Icon size={18} />
@@ -120,16 +120,16 @@ export default function PaymentsPage() {
   const paidAmount = installments.filter((i: any) => i.status === 'paid')
     .reduce((s: number, i: any) => s + parseFloat(i.amount_paid || i.amount || '0'), 0)
   const progress = totalAmount > 0 ? (paidAmount / totalAmount) * 100 : 0
-  const lateCount = installments.filter((i: any) => i.status === 'late" || i.status === 'default_risk").length
+  const lateCount = installments.filter((i: any) => i.status === 'late' || i.status === 'default_risk').length
 
-  const nextDue = installments.find((i: any) => ['pending", 'due_soon", 'due_today", 'late"].includes(i.status))
+  const nextDue = installments.find((i: any) => ['pending', 'due_soon', 'due_today', 'late'].includes(i.status))
 
   if (!latestApp) return (
     <div className="space-y-5">
       <h1 className="text-xl font-bold text-gray-900">{t('paymentCenter')}</h1>
       <EmptyState icon={CreditCard} title={t('noData')}
-        description={locale === 'ar" ? 'ستظهر تفاصيل الدفع هنا بعد الموافقة على طلبك."
-          : locale === 'fr" ? 'Les détails de paiement apparaîtront ici après l\'approbation de votre demande."
+        description={locale === 'ar' ? 'ستظهر تفاصيل الدفع هنا بعد الموافقة على طلبك.'
+          : locale === 'fr' ? "Les détails de paiement apparaîtront ici après l\'approbation de votre demande."
           : 'Payment details will appear here after your application is approved.'} />
     </div>
   )
@@ -139,9 +139,9 @@ export default function PaymentsPage() {
   if (!schedule) return (
     <div className="space-y-5">
       <h1 className="text-xl font-bold text-gray-900">{t('paymentCenter')}</h1>
-      <EmptyState icon={CreditCard} title={locale === 'ar" ? 'لا يوجد جدول دفع بعد" : locale === 'fr" ? 'Pas encore d\'échéancier" : 'No payment schedule yet'}
-        description={locale === 'ar" ? 'سيُنشأ جدول الدفع بعد اكتمال اجتماع التفعيل وتوقيع العقد."
-          : locale === 'fr" ? 'L\'échéancier de paiement sera généré après la réunion d\'activation et la signature du contrat."
+      <EmptyState icon={CreditCard} title={locale === 'ar' ? 'لا يوجد جدول دفع بعد' : locale === 'fr' ? "Pas encore d\'échéancier" : 'No payment schedule yet'}
+        description={locale === 'ar' ? 'سيُنشأ جدول الدفع بعد اكتمال اجتماع التفعيل وتوقيع العقد.'
+          : locale === 'fr' ? "L\'échéancier de paiement sera généré après la réunion d\'activation et la signature du contrat."
           : 'The payment schedule will be generated after your activation meeting and contract signing.'} />
     </div>
   )
@@ -151,8 +151,8 @@ export default function PaymentsPage() {
       <div>
         <h1 className="text-xl font-bold text-gray-900">{t('paymentCenter')}</h1>
         <p className="text-sm text-gray-500 mt-0.5">
-          {locale === 'ar" ? 'الدفع عبر التحويل البنكي أو الإيداع النقدي فقط"
-            : locale === 'fr" ? 'Paiement par virement bancaire ou dépôt en espèces uniquement"
+          {locale === 'ar' ? 'الدفع عبر التحويل البنكي أو الإيداع النقدي فقط'
+            : locale === 'fr' ? 'Paiement par virement bancaire ou dépôt en espèces uniquement'
             : 'Payment by bank transfer or cash deposit only'}
         </p>
       </div>
@@ -162,7 +162,7 @@ export default function PaymentsPage() {
         <div className="flex items-start justify-between mb-4">
           <div>
             <p className="text-xs text-gray-400 uppercase tracking-wide">
-              {locale === 'ar" ? 'إجمالي المبلغ" : locale === 'fr" ? 'Montant total" : 'Total amount'}
+              {locale === 'ar' ? 'إجمالي المبلغ' : locale === 'fr' ? 'Montant total' : 'Total amount'}
             </p>
             <p className="text-3xl font-bold text-gray-900">
               {totalAmount.toLocaleString()}
@@ -170,7 +170,7 @@ export default function PaymentsPage() {
             </p>
           </div>
           <div className="text-right">
-            <p className="text-xs text-gray-400">{locale === 'ar" ? 'تم الدفع" : locale === 'fr" ? 'Payé" : 'Paid'}</p>
+            <p className="text-xs text-gray-400">{locale === 'ar' ? 'تم الدفع' : locale === 'fr' ? 'Payé' : 'Paid'}</p>
             <p className="text-xl font-bold text-teal-600">{paidCount}/{schedule.installment_count}</p>
           </div>
         </div>
@@ -179,8 +179,8 @@ export default function PaymentsPage() {
             style={{ width: `${progress}%` }} />
         </div>
         <div className="flex justify-between text-xs text-gray-400">
-          <span>{paidAmount.toLocaleString()} {schedule.currency} {locale === 'ar" ? 'مدفوع" : locale === 'fr" ? 'payé" : 'paid'}</span>
-          <span>{(totalAmount - paidAmount).toLocaleString()} {schedule.currency} {locale === 'ar" ? 'متبقي" : locale === 'fr" ? 'restant" : 'remaining'}</span>
+          <span>{paidAmount.toLocaleString()} {schedule.currency} {locale === 'ar' ? 'مدفوع' : locale === 'fr' ? 'payé' : 'paid'}</span>
+          <span>{(totalAmount - paidAmount).toLocaleString()} {schedule.currency} {locale === 'ar' ? 'متبقي' : locale === 'fr' ? 'restant' : 'remaining'}</span>
         </div>
       </Card>
 
@@ -199,7 +199,7 @@ export default function PaymentsPage() {
           <div className="flex items-center gap-2 mb-3">
             <Clock size={15} className="text-teal-600" />
             <p className="text-sm font-semibold text-teal-800">
-              {locale === 'ar" ? 'الدفعة القادمة" : locale === 'fr" ? 'Prochain versement" : 'Next payment due'}
+              {locale === 'ar' ? 'الدفعة القادمة' : locale === 'fr' ? 'Prochain versement' : 'Next payment due'}
             </p>
           </div>
           <div className="flex items-center justify-between">
@@ -263,13 +263,13 @@ export default function PaymentsPage() {
             color="bg-blue-50 text-blue-600">
             <div className="space-y-3">
               <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                {locale === 'ar" ? 'تفاصيل الحساب" : locale === 'fr" ? 'Détails du compte" : 'Account details'}
+                {locale === 'ar' ? 'تفاصيل الحساب' : locale === 'fr' ? 'Détails du compte' : 'Account details'}
               </p>
               {[
-                { label: locale === 'ar" ? 'البنك" : locale === 'fr" ? 'Banque" : 'Bank", value: t('forsaBankName") },
-                { label: 'RIB", value: t('forsaBankRib") },
-                { label: 'IBAN", value: t('forsaBankAccount") },
-                { label: locale === 'ar" ? 'المستفيد" : locale === 'fr" ? 'Bénéficiaire" : 'Beneficiary", value: 'FORSA Tunisia" },
+                { label: locale === 'ar' ? 'البنك' : locale === 'fr' ? 'Banque' : 'Bank', value: t('forsaBankName') },
+                { label: 'RIB', value: t('forsaBankRib') },
+                { label: 'IBAN', value: t('forsaBankAccount') },
+                { label: locale === 'ar' ? 'المستفيد' : locale === 'fr' ? 'Bénéficiaire' : 'Beneficiary', value: 'FORSA Tunisia' },
               ].map(item => (
                 <div key={item.label} className="flex items-center justify-between py-2 border-b border-gray-50 last:border-0">
                   <span className="text-xs text-gray-500">{item.label}</span>
@@ -332,7 +332,7 @@ export default function PaymentsPage() {
                     'أذكر مرجع دفعك الفريد كسبب للإيداع',
                     'احتفظ بإيصال الإيداع وارفعه أدناه',
                   ] : locale === 'fr' ? [
-                    "Rendez-vous dans n\'agence Banque Zitouna",
+                    'Rendez-vous dans n\'agence Banque Zitouna',
                     'Demandez un dépôt sur le compte FORSA Tunisia',
                     'RIB : 20500000001234567890',
                     'Indiquez votre référence de paiement unique comme motif',
@@ -368,16 +368,16 @@ export default function PaymentsPage() {
       {/* Installments list */}
       <div>
         <p className="text-sm font-semibold text-gray-900 mb-3">
-          {locale === 'ar" ? 'جدول الأقساط" : locale === 'fr" ? 'Tableau des échéances" : 'Installment Schedule'}
+          {locale === 'ar' ? 'جدول الأقساط' : locale === 'fr' ? 'Tableau des échéances' : 'Installment Schedule'}
         </p>
         <div className="space-y-2">
           {installments.map((inst: any) => {
             const isPaid = inst.status === 'paid'
-            const isLate = inst.status === 'late" || inst.status === 'default_risk"
+            const isLate = inst.status === 'late' || inst.status === 'default_risk'
             const ref = generateRef(latestApp.id, inst.sequence_number || inst.sequence || 1)
             return (
               <Card key={inst.id} className={clsx(
-                isLate ? 'border-red-200 bg-red-50/30" : isPaid ? 'border-green-100" : ''
+                isLate ? 'border-red-200 bg-red-50/30' : isPaid ? 'border-green-100' : ''
               )}>
                 <div className="flex items-center gap-3">
                   <div className={clsx('w-9 h-9 rounded-xl flex items-center justify-center font-bold text-sm flex-shrink-0', {
@@ -397,9 +397,9 @@ export default function PaymentsPage() {
                         'bg-red-100 text-red-600': isLate,
                         'bg-gray-100 text-gray-500': !isPaid && !isLate,
                       })}>
-                        {isPaid ? (locale === 'ar" ? 'مدفوع" : isPaid && locale === 'fr" ? 'Payé" : 'Paid')
-                          : isLate ? (locale === 'ar" ? 'متأخر" : locale === 'fr" ? 'En retard" : 'Late')
-                          : (locale === 'ar" ? 'معلق" : locale === 'fr" ? 'En attente" : 'Pending')}
+                        {isPaid ? (locale === 'ar' ? 'مدفوع' : isPaid && locale === 'fr' ? 'Payé' : 'Paid')
+                          : isLate ? (locale === 'ar' ? 'متأخر' : locale === 'fr' ? 'En retard' : 'Late')
+                          : (locale === 'ar' ? 'معلق' : locale === 'fr' ? 'En attente' : 'Pending')}
                       </span>
                     </div>
                     <div className="flex items-center gap-2 mt-0.5">
@@ -421,11 +421,11 @@ export default function PaymentsPage() {
       {/* Help */}
       <Card className="bg-navy-50 border-navy-100">
         <p className="text-xs font-semibold text-navy-700 mb-1">
-          {locale === 'ar" ? 'هل تحتاج مساعدة في الدفع؟" : locale === 'fr" ? 'Besoin d\'aide pour payer ?" : 'Need help with payments?'}
+          {locale === 'ar' ? 'هل تحتاج مساعدة في الدفع؟' : locale === 'fr' ? "Besoin d\'aide pour payer ?" : 'Need help with payments?'}
         </p>
         <p className="text-xs text-navy-600">
-          {locale === 'ar" ? 'تواصل مع فريق FORSA: payments@forsa.tn | +216 XX XXX XXX"
-            : locale === 'fr" ? 'Contactez l\'équipe FORSA : payments@forsa.tn | +216 XX XXX XXX"
+          {locale === 'ar' ? 'تواصل مع فريق FORSA: payments@forsa.tn | +216 XX XXX XXX'
+            : locale === 'fr' ? "Contactez l\'équipe FORSA : payments@forsa.tn | +216 XX XXX XXX"
             : 'Contact FORSA team: payments@forsa.tn | +216 XX XXX XXX'}
         </p>
       </Card>
@@ -449,7 +449,7 @@ function ReceiptUpload({ installments, applicationId, currency, t, locale, onSuc
 
   const handleSubmit = async () => {
     if (!selectedInstallment || !form.paymentDate || !form.amount) {
-      setError(locale === 'ar" ? 'يرجى ملء جميع الحقول المطلوبة" : locale === 'fr" ? 'Veuillez remplir tous les champs obligatoires" : 'Please fill all required fields')
+      setError(locale === 'ar' ? 'يرجى ملء جميع الحقول المطلوبة' : locale === 'fr' ? 'Veuillez remplir tous les champs obligatoires' : 'Please fill all required fields')
       return
     }
     setSubmitting(true); setError('')
@@ -473,7 +473,7 @@ function ReceiptUpload({ installments, applicationId, currency, t, locale, onSuc
       setFile(null); setSelectedInstallment('')
       setTimeout(() => setSuccess(false), 5000)
     } catch (err: any) {
-      setError(err?.response?.data?.message || (locale === 'ar" ? 'فشل التقديم. حاول مرة أخرى." : locale === 'fr" ? 'Échec. Réessayez." : 'Submission failed. Please try again.'))
+      setError(err?.response?.data?.message || (locale === 'ar' ? 'فشل التقديم. حاول مرة أخرى.' : locale === 'fr' ? 'Échec. Réessayez.' : 'Submission failed. Please try again.'))
     } finally { setSubmitting(false) }
   }
 
@@ -499,10 +499,10 @@ function ReceiptUpload({ installments, applicationId, currency, t, locale, onSuc
         {/* Installment picker */}
         <div>
           <label className="text-xs font-medium text-gray-600 block mb-1.5">
-            {locale === 'ar" ? 'القسط المدفوع *" : locale === 'fr" ? 'Versement payé *" : 'Installment paid *'}
+            {locale === 'ar' ? 'القسط المدفوع *' : locale === 'fr' ? 'Versement payé *' : 'Installment paid *'}
           </label>
           <select className="input text-sm" value={selectedInstallment} onChange={e => setSelectedInstallment(e.target.value)}>
-            <option value="">{locale === 'ar" ? 'اختر القسط" : locale === 'fr" ? 'Sélectionner le versement" : 'Select installment'}</option>
+            <option value="">{locale === 'ar' ? 'اختر القسط' : locale === 'fr' ? 'Sélectionner le versement' : 'Select installment'}</option>
             {pendingInstallments.map((inst: any) => (
               <option key={inst.id} value={inst.id}>
                 #{inst.sequence_number || inst.sequence} — {parseFloat(inst.amount).toLocaleString()} {currency}
@@ -529,7 +529,7 @@ function ReceiptUpload({ installments, applicationId, currency, t, locale, onSuc
             <label className="text-xs font-medium text-gray-600 block mb-1.5">{t('bankName')}</label>
             <input className="input text-sm" value={form.bankName}
               onChange={e => setForm(f => ({ ...f, bankName: e.target.value }))}
-              placeholder={locale === 'ar" ? 'بنك الزيتونة" : 'Zitouna Bank'} />
+              placeholder={locale === 'ar' ? 'بنك الزيتونة' : 'Zitouna Bank'} />
           </div>
           <div>
             <label className="text-xs font-medium text-gray-600 block mb-1.5">{t('referenceNumber')}</label>
@@ -544,11 +544,11 @@ function ReceiptUpload({ installments, applicationId, currency, t, locale, onSuc
           <label className="text-xs font-medium text-gray-600 block mb-1.5">{t('receiptFile')}</label>
           <label className={clsx(
             'flex items-center gap-3 p-3 rounded-xl border-2 border-dashed cursor-pointer transition-all',
-            file ? 'border-teal-400 bg-teal-50" : 'border-gray-200 hover:border-gray-300"
+            file ? 'border-teal-400 bg-teal-50' : 'border-gray-200 hover:border-gray-300'
           )}>
-            <Upload size={16} className={file ? 'text-teal-500" : 'text-gray-400"} />
+            <Upload size={16} className={file ? 'text-teal-500' : 'text-gray-400'} />
             <span className="text-sm text-gray-600 truncate">
-              {file ? file.name : (locale === 'ar" ? 'اختر الملف (صورة أو PDF)" : locale === 'fr" ? 'Choisir le fichier (image ou PDF)" : 'Choose file (image or PDF)')}
+              {file ? file.name : (locale === 'ar' ? 'اختر الملف (صورة أو PDF)' : locale === 'fr' ? 'Choisir le fichier (image ou PDF)' : 'Choose file (image or PDF)')}
             </span>
             <input type="file" className="hidden" accept=".pdf,.jpg,.jpeg,.png"
               onChange={e => setFile(e.target.files?.[0] || null)} />
@@ -558,13 +558,13 @@ function ReceiptUpload({ installments, applicationId, currency, t, locale, onSuc
         <button onClick={handleSubmit} disabled={submitting || !selectedInstallment || !form.amount || !form.paymentDate}
           className="btn-primary w-full justify-center py-3">
           {submitting ? <Loader2 size={15} className="animate-spin" /> : <Upload size={15} />}
-          {submitting ? (locale === 'ar" ? 'جاري الإرسال..." : locale === 'fr" ? 'Envoi..." : 'Submitting...") : t('submitReceipt")}
+          {submitting ? (locale === 'ar' ? 'جاري الإرسال...' : locale === 'fr' ? 'Envoi...' : 'Submitting...') : t('submitReceipt')}
         </button>
 
         <p className="text-xs text-gray-400 text-center">
           <Info size={11} className="inline me-1" />
-          {locale === 'ar" ? 'يمكنك فقط رفع إيصالات الدفع. لا يُسمح بتحميل وثائق الهوية أو الوثائق الحساسة عبر الإنترنت."
-            : locale === 'fr" ? 'Vous ne pouvez télécharger que des reçus de paiement. Les documents d\'identité sensibles ne sont pas acceptés en ligne."
+          {locale === 'ar' ? 'يمكنك فقط رفع إيصالات الدفع. لا يُسمح بتحميل وثائق الهوية أو الوثائق الحساسة عبر الإنترنت.'
+            : locale === 'fr' ? "Vous ne pouvez télécharger que des reçus de paiement. Les documents d\'identité sensibles ne sont pas acceptés en ligne."
             : 'You can only upload payment receipts. Sensitive identity documents are not accepted online.'}
         </p>
       </div>

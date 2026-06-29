@@ -12,7 +12,7 @@ import { Send, Loader2, CheckCircle } from 'lucide-react'
 import clsx from 'clsx'
 
 interface Message {
-  role: 'user" | 'assistant"
+  role: 'user' | 'assistant'
   content: string
   timestamp: Date
 }
@@ -30,7 +30,7 @@ interface ApplyData {
 
 // ─── System prompt ───────────────────────────────────────────────────────────
 function buildSystemPrompt(data: ApplyData, lang: Locale): string {
-  const langName = lang === 'ar" ? 'Arabic" : lang === 'fr" ? 'French" : 'English'
+  const langName = lang === 'ar' ? 'Arabic' : lang === 'fr' ? 'French' : 'English'
   return `You are FORSA's AI readiness interviewer. Warm, professional, genuinely curious.
 Conduct the ENTIRE interview in ${langName}. Ask ONE question at a time. Be conversational.
 Student: ${data.firstName} ${data.lastName} | University: ${data.universityName} | Program: ${data.program}
@@ -42,7 +42,7 @@ After 8 exchanges, wrap up warmly. NEVER say approved/rejected/bronze. You do NO
 
 // ─── Scoring prompt ───────────────────────────────────────────────────────────
 function buildScoringPrompt(data: ApplyData, messages: Message[], lang: Locale): string {
-  const transcript = messages.map(m => `${m.role === 'user" ? 'Student" : 'AI'}: ${m.content}`).join('\n\n')
+  const transcript = messages.map(m => `${m.role === 'user' ? 'Student' : 'AI'}: ${m.content}`).join('\n\n')
   return `You are a FORSA analyst. Review this ${lang} interview and return ONLY valid JSON:
 Student: ${data.firstName} ${data.lastName} | ${data.universityName} | ${data.program} | ${data.tuitionAmount} TND
 TRANSCRIPT:\n${transcript}
@@ -88,11 +88,11 @@ async function callAIScore(prompt: string, isDemo: boolean): Promise<string> {
       },
       executive_summary: 'The candidate demonstrated clear motivation and a realistic understanding of their financial situation. Their commitment readiness and planning awareness are strong indicators of reliability.',
       executive_summary_fr: 'Le candidat a démontré une motivation claire et une compréhension réaliste de sa situation financière. Sa préparation et sa conscience des engagements sont des indicateurs positifs.',
-      strengths: ['Clear career vision and motivation", 'Realistic financial awareness", 'Good planning mindset'],
+      strengths: ['Clear career vision and motivation', 'Realistic financial awareness', 'Good planning mindset'],
       concerns: ['Payment backup plan could be strengthened'],
       risk_flags: [],
       missing_information: ['Employment status details'],
-      recommended_next_steps: ['Request supporting financial documents", 'Verify guarantor commitment"],
+      recommended_next_steps: ['Request supporting financial documents', 'Verify guarantor commitment'],
       recommendation: 'Silver Candidate',
       interview_language: 'fr',
       interview_conducted_at: new Date().toISOString(),
@@ -111,7 +111,7 @@ export default function InterviewPage() {
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
   const [initializing, setInitializing] = useState(true)
-  const [phase, setPhase] = useState<'interview" | 'completing" | 'done" | 'error">('interview')
+  const [phase, setPhase] = useState<'interview' | 'completing' | 'done' | 'error'>('interview')
   const [error, setError] = useState('')
   const [isDemo, setIsDemo] = useState(false)
   const [turnCount, setTurnCount] = useState(0)
@@ -151,7 +151,7 @@ export default function InterviewPage() {
         const demoReply = await callAI([], '', studentData, true)
         setMessages([{ role: 'assistant', content: demoReply, timestamp: new Date() }])
       } catch {
-        setError(lang === 'ar" ? 'حدث خطأ. يرجى المحاولة مرة أخرى." : lang === 'fr" ? 'Erreur de connexion. Veuillez réessayer." : 'Connection error. Please try again.')
+        setError(lang === 'ar' ? 'حدث خطأ. يرجى المحاولة مرة أخرى.' : lang === 'fr' ? 'Erreur de connexion. Veuillez réessayer.' : 'Connection error. Please try again.')
       }
     } finally {
       setInitializing(false)
@@ -191,7 +191,7 @@ export default function InterviewPage() {
         setTimeout(() => completeInterview(data, finalMessages), 2500)
       }
     } catch {
-      setError(lang === 'ar" ? 'فشل الإرسال. يرجى المحاولة مرة أخرى." : lang === 'fr" ? 'Échec de l\'envoi. Réessayez." : 'Send failed. Please retry.')
+      setError(lang === 'ar' ? 'فشل الإرسال. يرجى المحاولة مرة أخرى.' : lang === 'fr' ? "Échec de l\'envoi. Réessayez." : 'Send failed. Please retry.')
     } finally {
       setLoading(false)
     }
@@ -210,7 +210,7 @@ export default function InterviewPage() {
       } catch {}
 
       const transcript = finalMessages
-        .map(m => `[${m.role === 'user" ? studentData.firstName : 'FORSA AI"}] ${m.content}`)
+        .map(m => `[${m.role === 'user' ? studentData.firstName : 'FORSA AI'}] ${m.content}`)
         .join('\n\n---\n\n')
 
       try {
@@ -241,19 +241,19 @@ export default function InterviewPage() {
   }
 
   const L = {
-    preparing: { en: 'Preparing your interview…", fr: 'Préparation de votre entretien…", ar: 'جاري تحضير مقابلتك…' },
-    thinking: { en: 'FORSA is thinking…", fr: 'FORSA réfléchit…", ar: 'FORSA يفكر…' },
-    placeholder: { en: 'Type your answer…", fr: 'Écrivez votre réponse…", ar: 'اكتب إجابتك…' },
-    hint: { en: 'Enter to send · Shift+Enter for new line", fr: 'Entrée pour envoyer · Maj+Entrée pour nouvelle ligne", ar: 'Enter للإرسال · Shift+Enter لسطر جديد' },
-    endBtn: { en: 'End interview", fr: 'Terminer l\'entretien", ar: 'إنهاء المقابلة' },
-    completing: { en: 'Submitting your application…", fr: 'Envoi de votre dossier…", ar: 'جاري إرسال طلبك…' },
-    doneTitle: { en: 'Interview Complete!", fr: 'Entretien terminé !", ar: 'اكتملت المقابلة!' },
-    doneDesc: { en: 'Our team will review your application and determine your FORSA pathway. Every applicant becomes part of the FORSA community.", fr: 'Notre équipe examinera votre dossier et déterminera votre voie FORSA. Chaque candidat fait partie de la communauté FORSA.", ar: 'سيراجع فريقنا طلبك ويحدد مسارك في FORSA. كل متقدم يصبح جزءاً من مجتمع FORSA.' },
-    doneNotice: { en: 'Every FORSA applicant is placed in the most suitable pathway: Gold, Silver, or Bronze. Bronze members receive full ecosystem access and are prioritised when new financing capacity opens.", fr: 'Chaque candidat FORSA est placé dans la voie la plus adaptée : Gold, Silver ou Bronze. Les membres Bronze bénéficient d\'un accès complet à l\'écosystème et sont prioritaires à l\'ouverture de nouvelles capacités de financement.", ar: 'يُوضع كل متقدم في FORSA في المسار الأنسب له: ذهبي أو فضي أو برونزي. يحصل الأعضاء البرونزيون على وصول كامل للمنظومة وأولوية عند فتح طاقة تمويل جديدة.' },
-    goHome: { en: 'Return to my account", fr: 'Retourner à mon compte", ar: 'العودة إلى حسابي' },
-    title: { en: 'FORSA Interview", fr: 'Entretien FORSA", ar: 'مقابلة FORSA' },
-    subtitle: { en: 'AI Assistant · Does not make decisions", fr: 'Assistant IA · Ne prend pas de décisions", ar: 'مساعد ذكاء اصطناعي · لا يتخذ قرارات' },
-    turn: { en: 'Turn", fr: 'Tour", ar: 'استدارة' },
+    preparing: { en: 'Preparing your interview…', fr: 'Préparation de votre entretien…', ar: 'جاري تحضير مقابلتك…' },
+    thinking: { en: 'FORSA is thinking…', fr: 'FORSA réfléchit…', ar: 'FORSA يفكر…' },
+    placeholder: { en: 'Type your answer…', fr: 'Écrivez votre réponse…', ar: 'اكتب إجابتك…' },
+    hint: { en: 'Enter to send · Shift+Enter for new line', fr: 'Entrée pour envoyer · Maj+Entrée pour nouvelle ligne', ar: 'Enter للإرسال · Shift+Enter لسطر جديد' },
+    endBtn: { en: 'End interview', fr: "Terminer l\'entretien", ar: 'إنهاء المقابلة' },
+    completing: { en: 'Submitting your application…', fr: 'Envoi de votre dossier…', ar: 'جاري إرسال طلبك…' },
+    doneTitle: { en: 'Interview Complete!', fr: 'Entretien terminé !', ar: 'اكتملت المقابلة!' },
+    doneDesc: { en: 'Our team will review your application and determine your FORSA pathway. Every applicant becomes part of the FORSA community.', fr: 'Notre équipe examinera votre dossier et déterminera votre voie FORSA. Chaque candidat fait partie de la communauté FORSA.', ar: 'سيراجع فريقنا طلبك ويحدد مسارك في FORSA. كل متقدم يصبح جزءاً من مجتمع FORSA.' },
+    doneNotice: { en: 'Every FORSA applicant is placed in the most suitable pathway: Gold, Silver, or Bronze. Bronze members receive full ecosystem access and are prioritised when new financing capacity opens.', fr: "Chaque candidat FORSA est placé dans la voie la plus adaptée : Gold, Silver ou Bronze. Les membres Bronze bénéficient d\'un accès complet à l\'écosystème et sont prioritaires à l\'ouverture de nouvelles capacités de financement.", ar: 'يُوضع كل متقدم في FORSA في المسار الأنسب له: ذهبي أو فضي أو برونزي. يحصل الأعضاء البرونزيون على وصول كامل للمنظومة وأولوية عند فتح طاقة تمويل جديدة.' },
+    goHome: { en: 'Return to my account', fr: 'Retourner à mon compte', ar: 'العودة إلى حسابي' },
+    title: { en: 'FORSA Interview', fr: 'Entretien FORSA', ar: 'مقابلة FORSA' },
+    subtitle: { en: 'AI Assistant · Does not make decisions', fr: 'Assistant IA · Ne prend pas de décisions', ar: 'مساعد ذكاء اصطناعي · لا يتخذ قرارات' },
+    turn: { en: 'Turn', fr: 'Tour', ar: 'استدارة' },
     demoLabel: { en: '🎭 Demo mode', fr: '🎭 Mode démo', ar: '🎭 وضع العرض' },
   }
   const l = (key: keyof typeof L): string => L[key][lang] || L[key].en
@@ -288,7 +288,7 @@ export default function InterviewPage() {
       <div className="bg-navy-50 border border-navy-100 rounded-2xl p-4 text-sm text-navy-700 max-w-sm leading-relaxed">
         {l('doneNotice')}
       </div>
-      <button onClick={() => navigate('/")} className="btn-teal py-3 px-8">{l('goHome")}</button>
+      <button onClick={() => navigate('/')} className="btn-teal py-3 px-8">{l('goHome')}</button>
     </div>
   )
 
@@ -314,7 +314,7 @@ export default function InterviewPage() {
       {/* Messages */}
       <div className="flex-1 overflow-y-auto py-4 space-y-4">
         {messages.map((msg, i) => (
-          <div key={i} className={clsx('flex gap-3", msg.role === 'user" ? 'justify-end" : 'justify-start")}>
+          <div key={i} className={clsx('flex gap-3', msg.role === 'user' ? 'justify-end' : 'justify-start')}>
             {msg.role === 'assistant' && (
               <div className="w-8 h-8 bg-navy-800 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                 <span className="text-white text-xs font-bold">F</span>
@@ -322,10 +322,10 @@ export default function InterviewPage() {
             )}
             <div className={clsx(
               'max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed',
-              msg.role === 'assistant" ? 'bg-gray-100 text-gray-800 rounded-tl-sm" : 'bg-navy-800 text-white rounded-tr-sm'
+              msg.role === 'assistant' ? 'bg-gray-100 text-gray-800 rounded-tl-sm' : 'bg-navy-800 text-white rounded-tr-sm'
             )}>
               <p style={{ whiteSpace: 'pre-wrap' }}>{msg.content}</p>
-              <p className={clsx('text-xs mt-1.5", msg.role === 'assistant" ? 'text-gray-400" : 'text-white/40")}>
+              <p className={clsx('text-xs mt-1.5', msg.role === 'assistant' ? 'text-gray-400' : 'text-white/40')}>
                 {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </p>
             </div>

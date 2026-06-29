@@ -30,9 +30,9 @@ export default function NotificationsPage() {
   }
 
   const getColor = (type: string, priority: string) => {
-    if (priority === 'high") return 'bg-red-50 text-red-500"
-    if (type === 'payment") return 'bg-green-50 text-green-500"
-    if (type === 'application") return 'bg-blue-50 text-blue-500"
+    if (priority === 'high') return 'bg-red-50 text-red-500'
+    if (type === 'payment') return 'bg-green-50 text-green-500'
+    if (type === 'application') return 'bg-blue-50 text-blue-500'
     return 'bg-gray-50 text-gray-500'
   }
 
@@ -50,8 +50,8 @@ export default function NotificationsPage() {
       {isLoading ? <Spinner className="h-40" /> : notifications.length === 0 ? (
         <EmptyState
           icon={Bell}
-          title={locale === 'ar" ? 'لا توجد إشعارات" : locale === 'fr" ? 'Aucune notification" : 'No notifications'}
-          description={locale === 'ar" ? 'أنت في صدارة الأمور! ستظهر هنا تحديثات الطلب وتذكيرات الدفع." : locale === 'fr" ? 'Vous êtes à jour ! Les mises à jour de dossier et rappels de paiement apparaîtront ici." : "You're all caught up! Application updates and payment reminders will appear here."}
+          title={locale === 'ar' ? 'لا توجد إشعارات' : locale === 'fr' ? 'Aucune notification' : 'No notifications'}
+          description={locale === 'ar' ? 'أنت في صدارة الأمور! ستظهر هنا تحديثات الطلب وتذكيرات الدفع.' : locale === 'fr' ? 'Vous êtes à jour ! Les mises à jour de dossier et rappels de paiement apparaîtront ici.' : "You're all caught up! Application updates and payment reminders will appear here."}
         />
       ) : (
         <div className="space-y-2">
@@ -65,7 +65,7 @@ export default function NotificationsPage() {
                     <Icon size={16} />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className={`text-sm ${!n.read_at ? 'font-semibold text-gray-900" : 'font-medium text-gray-700"}`}>
+                    <p className={`text-sm ${!n.read_at ? 'font-semibold text-gray-900' : 'font-medium text-gray-700'}`}>
                       {n.title || n.subject || 'Notification'}
                     </p>
                     {n.body && (

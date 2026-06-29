@@ -8,11 +8,11 @@ import { FileText, ChevronRight, Clock, CheckCircle, AlertCircle } from 'lucide-
 import { format } from 'date-fns'
 
 const PIPELINE_STAGES = [
-  { key: 'received", label: 'Received", statuses: ['new_lead", 'contacted"] },
-  { key: 'documents", label: 'Documents", statuses: ['waiting_for_documents", 'documents_received"] },
-  { key: 'review", label: 'Under Review", statuses: ['under_review'] },
-  { key: 'decision", label: 'Decision", statuses: ['approved_level1", 'approved_level2", 'approved_level3", 'rejected", 'on_hold'] },
-  { key: 'active", label: 'Active", statuses: ['contract_sent", 'contract_signed", 'active_student", 'completed"] },
+  { key: 'received', label: 'Received', statuses: ['new_lead', 'contacted'] },
+  { key: 'documents', label: 'Documents', statuses: ['waiting_for_documents', 'documents_received'] },
+  { key: 'review', label: 'Under Review', statuses: ['under_review'] },
+  { key: 'decision', label: 'Decision', statuses: ['approved_level1', 'approved_level2', 'approved_level3', 'rejected', 'on_hold'] },
+  { key: 'active', label: 'Active', statuses: ['contract_sent', 'contract_signed', 'active_student', 'completed'] },
 ]
 
 export default function ApplicationPage() {
@@ -35,7 +35,7 @@ export default function ApplicationPage() {
         <h1 className="section-title">{t('myApplication')}</h1>
         <EmptyState
           icon={FileText}
-          title={locale === 'ar" ? 'لا يوجد طلب بعد" : locale === 'fr" ? 'Pas encore de dossier" : 'No application yet'}
+          title={locale === 'ar' ? 'لا يوجد طلب بعد' : locale === 'fr' ? 'Pas encore de dossier' : 'No application yet'}
           description="Apply for FORSA financing to fund your university studies."
           action={<Link to="/application/new" className="btn-teal">Apply now</Link>}
         />
@@ -57,7 +57,7 @@ function ApplicationDetail({ app }: { app: any }) {
   // Find current stage
   const currentStageIndex = PIPELINE_STAGES.findIndex(s => s.statuses.includes(app.current_status))
 
-  const isApproved = ['approved_level1", 'approved_level2", 'approved_level3'].includes(app.current_status)
+  const isApproved = ['approved_level1', 'approved_level2', 'approved_level3'].includes(app.current_status)
   const isRejected = app.current_status === 'rejected'
 
   return (
@@ -147,7 +147,7 @@ function ApplicationDetail({ app }: { app: any }) {
           <div className="bg-white border border-gray-100 rounded-2xl p-5">
             <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">{t('bronzeWhat')}</p>
             <ul className="space-y-2">
-              {(['bronzeItem1",'bronzeItem2",'bronzeItem3",'bronzeItem4",'bronzeItem5",'bronzeItem6"] as const).map(key => (
+              {(['bronzeItem1','bronzeItem2','bronzeItem3','bronzeItem4','bronzeItem5','bronzeItem6'] as const).map(key => (
                 <li key={key} className="flex items-center gap-2.5 text-sm text-gray-700">
                   <span className="text-teal-500 flex-shrink-0">✓</span>
                   {t(key)}
@@ -192,7 +192,7 @@ function ApplicationDetail({ app }: { app: any }) {
               <div key={stage.key} className="flex items-start gap-3">
                 <div className="flex flex-col items-center mt-0.5">
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
-                    isCompleted ? 'bg-teal-500" : isCurrent ? 'bg-navy-800" : 'bg-gray-100'
+                    isCompleted ? 'bg-teal-500' : isCurrent ? 'bg-navy-800' : 'bg-gray-100'
                   }`}>
                     {isCompleted
                       ? <CheckCircle size={14} className="text-white" />
@@ -202,11 +202,11 @@ function ApplicationDetail({ app }: { app: any }) {
                     }
                   </div>
                   {i < PIPELINE_STAGES.length - 1 && (
-                    <div className={`w-0.5 h-6 mt-1 ${isCompleted ? 'bg-teal-300" : 'bg-gray-100"}`} />
+                    <div className={`w-0.5 h-6 mt-1 ${isCompleted ? 'bg-teal-300' : 'bg-gray-100'}`} />
                   )}
                 </div>
                 <div className="pb-2">
-                  <p className={`text-sm font-medium ${isCurrent ? 'text-navy-800" : isCompleted ? 'text-teal-700" : 'text-gray-400'}`}>
+                  <p className={`text-sm font-medium ${isCurrent ? 'text-navy-800' : isCompleted ? 'text-teal-700' : 'text-gray-400'}`}>
                     {stage.label}
                   </p>
                   {isCurrent && (
