@@ -129,7 +129,7 @@ export default function PaymentsPage() {
       <h1 className="text-xl font-bold text-gray-900">{t('paymentCenter')}</h1>
       <EmptyState icon={CreditCard} title={t('noData')}
         description={locale === 'ar' ? 'ستظهر تفاصيل الدفع هنا بعد الموافقة على طلبك.'
-          : locale === 'fr' ? "Les détails de paiement apparaîtront ici après l\'approbation de votre demande."
+          : locale === 'fr' ? "Les détails de paiement apparaîtront ici après l\'approbation de votre demande.'
           : 'Payment details will appear here after your application is approved.'} />
     </div>
   )
@@ -141,7 +141,7 @@ export default function PaymentsPage() {
       <h1 className="text-xl font-bold text-gray-900">{t('paymentCenter')}</h1>
       <EmptyState icon={CreditCard} title={locale === 'ar' ? 'لا يوجد جدول دفع بعد' : locale === 'fr' ? "Pas encore d\'échéancier" : 'No payment schedule yet'}
         description={locale === 'ar' ? 'سيُنشأ جدول الدفع بعد اكتمال اجتماع التفعيل وتوقيع العقد.'
-          : locale === 'fr' ? "L\'échéancier de paiement sera généré après la réunion d\'activation et la signature du contrat."
+          : locale === 'fr' ? "L\'échéancier de paiement sera généré après la réunion d\'activation et la signature du contrat.'
           : 'The payment schedule will be generated after your activation meeting and contract signing.'} />
     </div>
   )
@@ -421,7 +421,7 @@ export default function PaymentsPage() {
       {/* Help */}
       <Card className="bg-navy-50 border-navy-100">
         <p className="text-xs font-semibold text-navy-700 mb-1">
-          {locale === 'ar' ? 'هل تحتاج مساعدة في الدفع؟' : locale === 'fr' ? "Besoin d\'aide pour payer ?" : 'Need help with payments?'}
+          {locale === 'ar' ? 'هل تحتاج مساعدة في الدفع؟' : locale === 'fr' ? "Besoin d\'aide pour payer ?' : 'Need help with payments?'}
         </p>
         <p className="text-xs text-navy-600">
           {locale === 'ar' ? 'تواصل مع فريق FORSA: payments@forsa.tn | +216 XX XXX XXX'
@@ -564,7 +564,7 @@ function ReceiptUpload({ installments, applicationId, currency, t, locale, onSuc
         <p className="text-xs text-gray-400 text-center">
           <Info size={11} className="inline me-1" />
           {locale === 'ar' ? 'يمكنك فقط رفع إيصالات الدفع. لا يُسمح بتحميل وثائق الهوية أو الوثائق الحساسة عبر الإنترنت.'
-            : locale === 'fr' ? "Vous ne pouvez télécharger que des reçus de paiement. Les documents d\'identité sensibles ne sont pas acceptés en ligne."
+            : locale === 'fr' ? "Vous ne pouvez télécharger que des reçus de paiement. Les documents d\'identité sensibles ne sont pas acceptés en ligne.'
             : 'You can only upload payment receipts. Sensitive identity documents are not accepted online.'}
         </p>
       </div>

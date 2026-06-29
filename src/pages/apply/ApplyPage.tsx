@@ -221,7 +221,7 @@ export default function ApplyPage() {
                     <option value="5">Year 5+</option>
                   </select>
                 </FormField>
-                <FormField label={locale === 'ar' ? 'طالب حالي؟' : locale === 'fr' ? 'Étudiant actuel ?" : 'Current student?"} required error={errors.isCurrentStudent}>
+                <FormField label={locale === 'ar' ? 'طالب حالي؟' : locale === 'fr' ? 'Étudiant actuel ?' : 'Current student?'} required error={errors.isCurrentStudent}>
                   <select className="input" value={data.isCurrentStudent} onChange={set('isCurrentStudent')}>
                     <option value="">Select</option>
                     <option value="yes">{locale === 'ar' ? 'نعم' : 'Yes'}</option>
@@ -254,7 +254,7 @@ export default function ApplyPage() {
             </p>
             <div className="space-y-4">
               <FormField
-                label={locale === 'ar' ? 'من المتوقع أن يسدد الأقساط الشهرية؟' : locale === 'fr' ? 'Qui devrait payer les mensualités ?" : 'Who is expected to pay the monthly installments?"}
+                label={locale === 'ar' ? 'من المتوقع أن يسدد الأقساط الشهرية؟' : locale === 'fr' ? 'Qui devrait payer les mensualités ?' : 'Who is expected to pay the monthly installments?'}
                 required error={errors.paymentResponsible}>
                 <select className="input" value={data.paymentResponsible} onChange={set('paymentResponsible')}>
                   <option value="">Select</option>
@@ -281,7 +281,7 @@ export default function ApplyPage() {
               </FormField>
 
               <FormField
-                label={locale === 'ar' ? 'هل لديك ضامن؟' : locale === 'fr' ? 'Avez-vous un garant ?" : 'Do you have a guarantor?"}
+                label={locale === 'ar' ? 'هل لديك ضامن؟' : locale === 'fr' ? 'Avez-vous un garant ?' : 'Do you have a guarantor?'}
                 required error={errors.hasGuarantor}>
                 <div className="flex gap-3">
                   {['yes', 'no'].map(v => (
@@ -345,12 +345,12 @@ function ConsentGate({ data, onBack }: { data: Phase1Data; onBack: () => void })
     {
       key: 'privacy',
       label: { en: 'Privacy Policy', fr: 'Politique de confidentialité', ar: 'سياسة الخصوصية' },
-      desc: { en: 'I have read and agree to the FORSA Privacy Policy regarding how my personal data is collected and used.', fr: "J\'ai lu et accepte la Politique de confidentialité de FORSA concernant la collecte et l\'utilisation de mes données personnelles.", ar: 'لقد قرأت ووافقت على سياسة خصوصية FORSA المتعلقة بكيفية جمع بياناتي الشخصية واستخدامها.' }
+      desc: { en: 'I have read and agree to the FORSA Privacy Policy regarding how my personal data is collected and used.', fr: "J\'ai lu et accepte la Politique de confidentialité de FORSA concernant la collecte et l\'utilisation de mes données personnelles.', ar: 'لقد قرأت ووافقت على سياسة خصوصية FORSA المتعلقة بكيفية جمع بياناتي الشخصية واستخدامها.' }
     },
     {
       key: 'terms',
       label: { en: 'Terms of Service', fr: "Conditions d\'utilisation", ar: 'شروط الخدمة' },
-      desc: { en: 'I accept the FORSA Terms of Service and understand the financing conditions.', fr: "J\'accepte les Conditions d\'utilisation de FORSA et comprends les conditions de financement.", ar: 'أقبل شروط خدمة FORSA وأفهم شروط التمويل.' }
+      desc: { en: 'I accept the FORSA Terms of Service and understand the financing conditions.', fr: "J\'accepte les Conditions d\'utilisation de FORSA et comprends les conditions de financement.', ar: 'أقبل شروط خدمة FORSA وأفهم شروط التمويل.' }
     },
     {
       key: 'dataProcessing',
@@ -360,18 +360,18 @@ function ConsentGate({ data, onBack }: { data: Phase1Data; onBack: () => void })
     {
       key: 'aiNotice',
       label: { en: 'AI Interview Notice', fr: "Notice sur l\'entretien IA", ar: 'إشعار المقابلة بالذكاء الاصطناعي' },
-      desc: { en: 'I understand that the following interview is conducted by an AI assistant. The AI does NOT approve or reject applications. FORSA places every applicant in the most suitable pathway (Gold, Silver, or Bronze). All pathway decisions are made exclusively by the FORSA team.', fr: "Je comprends que l\'entretien suivant est conduit par un assistant IA. L\'IA n\'approuve NI ne rejette les demandes. Toutes les décisions finales sont prises exclusivement par l\'équipe FORSA. Une pré-approbation n\'est pas une approbation finale.", ar: 'أفهم أن المقابلة التالية يُجريها مساعد ذكاء اصطناعي. لا يوافق الذكاء الاصطناعي على الطلبات ولا يرفضها. تضع FORSA كل متقدم في المسار الأنسب له (ذهبي أو فضي أو برونزي). جميع قرارات المسار يتخذها فريق FORSA حصراً.' }
+      desc: { en: 'I understand that the following interview is conducted by an AI assistant. The AI does NOT approve or reject applications. FORSA places every applicant in the most suitable pathway (Gold, Silver, or Bronze). All pathway decisions are made exclusively by the FORSA team.', fr: "Je comprends que l\'entretien suivant est conduit par un assistant IA. L\'IA n\'approuve NI ne rejette les demandes. Toutes les décisions finales sont prises exclusivement par l\'équipe FORSA. Une pré-approbation n\'est pas une approbation finale.', ar: 'أفهم أن المقابلة التالية يُجريها مساعد ذكاء اصطناعي. لا يوافق الذكاء الاصطناعي على الطلبات ولا يرفضها. تضع FORSA كل متقدم في المسار الأنسب له (ذهبي أو فضي أو برونزي). جميع قرارات المسار يتخذها فريق FORSA حصراً.' }
     },
     {
       key: 'truthful',
       label: { en: 'Declaration of Truthfulness', fr: 'Déclaration de véracité', ar: 'إقرار بصحة المعلومات' },
-      desc: { en: 'I declare that all information I have provided and will provide during this application is truthful, accurate, and complete to the best of my knowledge.', fr: "Je déclare que toutes les informations que j\'ai fournies et fournirai lors de cette demande sont véridiques, exactes et complètes au meilleur de ma connaissance.", ar: 'أُقر بأن جميع المعلومات التي قدمتها وسأقدمها خلال هذا الطلب صحيحة ودقيقة وكاملة في حدود علمي.' }
+      desc: { en: 'I declare that all information I have provided and will provide during this application is truthful, accurate, and complete to the best of my knowledge.', fr: "Je déclare que toutes les informations que j\'ai fournies et fournirai lors de cette demande sont véridiques, exactes et complètes au meilleur de ma connaissance.', ar: 'أُقر بأن جميع المعلومات التي قدمتها وسأقدمها خلال هذا الطلب صحيحة ودقيقة وكاملة في حدود علمي.' }
     },
   ]
 
   const AI_NOTICE: Record<Locale, string> = {
     en: '⚡ Important: The AI interview helps us understand your readiness. Every applicant joins the FORSA ecosystem — Gold, Silver, or Bronze. The AI does not decide your pathway. Our team does.',
-    fr: "⚡ Important : L\'entretien IA nous aide à comprendre votre préparation. Chaque candidat rejoint l\'écosystème FORSA — Gold, Silver ou Bronze. L\'IA ne décide pas de votre voie. Notre équipe le fait.",
+    fr: "⚡ Important : L\'entretien IA nous aide à comprendre votre préparation. Chaque candidat rejoint l\'écosystème FORSA — Gold, Silver ou Bronze. L\'IA ne décide pas de votre voie. Notre équipe le fait.',
     ar: '⚡ هام: تساعدنا مقابلة الذكاء الاصطناعي على فهم مدى استعدادك. كل متقدم ينضم إلى منظومة FORSA — ذهبي أو فضي أو برونزي. الذكاء الاصطناعي لا يقرر مسارك. فريقنا يفعل ذلك.',
   }
 

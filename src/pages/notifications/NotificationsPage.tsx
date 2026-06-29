@@ -51,7 +51,7 @@ export default function NotificationsPage() {
         <EmptyState
           icon={Bell}
           title={locale === 'ar' ? 'لا توجد إشعارات' : locale === 'fr' ? 'Aucune notification' : 'No notifications'}
-          description={locale === 'ar' ? 'أنت في صدارة الأمور! ستظهر هنا تحديثات الطلب وتذكيرات الدفع.' : locale === 'fr' ? 'Vous êtes à jour ! Les mises à jour de dossier et rappels de paiement apparaîtront ici.' : "You're all caught up! Application updates and payment reminders will appear here."}
+          description={locale === 'ar' ? 'أنت في صدارة الأمور! ستظهر هنا تحديثات الطلب وتذكيرات الدفع.' : locale === 'fr' ? 'Vous êtes à jour ! Les mises à jour de dossier et rappels de paiement apparaîtront ici.' : "You're all caught up! Application updates and payment reminders will appear here.'}
         />
       ) : (
         <div className="space-y-2">

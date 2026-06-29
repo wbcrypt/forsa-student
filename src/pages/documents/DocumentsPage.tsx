@@ -69,7 +69,7 @@ function StatusGate({ status }: { status: string }) {
           </p>
           <p className="text-sm text-green-700 mt-1">
             {locale === 'ar' ? 'اكتمل اجتماع التفعيل الخاص بك. أنت طالب FORSA نشط الآن.'
-              : locale === 'fr' ? "Votre réunion d\'activation est terminée. Vous êtes maintenant un étudiant FORSA actif."
+              : locale === 'fr' ? "Votre réunion d\'activation est terminée. Vous êtes maintenant un étudiant FORSA actif.'
               : 'Your activation meeting is complete. You are now an active FORSA student.'}
           </p>
         </div>
@@ -148,7 +148,7 @@ export default function DocumentsPage() {
             {locale === 'ar'
               ? 'لأسباب أمنية، جميع الوثائق الحساسة (الهوية، الضامن، الدخل) تُقدَّم فقط في اجتماع التفعيل الحضوري مع فريق FORSA.'
               : locale === 'fr'
-              ? "Pour des raisons de sécurité, tous les documents sensibles (identité, garant, revenus) sont présentés uniquement lors de la réunion d\'activation en personne avec l\'équipe FORSA."
+              ? "Pour des raisons de sécurité, tous les documents sensibles (identité, garant, revenus) sont présentés uniquement lors de la réunion d\'activation en personne avec l\'équipe FORSA.'
               : 'For security reasons, all sensitive documents (identity, guarantor, income) are presented only at the in-person activation meeting with the FORSA team.'}
           </p>
         </div>
