@@ -83,7 +83,7 @@ function StatusGate({ status }: { status: string }) {
         <div className="w-14 h-14 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
           <Clock size={24} className="text-gray-400" />
         </div>
-        <p className="font-semibold text-gray-700">{t('notYetPreApproved")}</p>
+        <p className="font-semibold text-gray-700">{t('notYetPreApproved')}</p>
         <p className="text-sm text-gray-400 mt-2 leading-relaxed max-w-sm mx-auto">
           {t('notYetPreApprovedDesc')}
         </p>
@@ -92,7 +92,7 @@ function StatusGate({ status }: { status: string }) {
             {locale === 'ar'
               ? 'مراحل الموافقة: مقدّم → مقابلة الذكاء الاصطناعي → مراجعة داخلية → موافقة مبدئية → اجتماع التفعيل'
               : locale === 'fr'
-              ? "Étapes : Soumis → Entretien IA → Revue interne → Pré-approuvé → Réunion d"activation"
+              ? "Étapes : Soumis → Entretien IA → Revue interne → Pré-approuvé → Réunion d'activation"
               : 'Steps: Submitted → AI Interview → Internal Review → Pre-Approved → Activation Meeting'}
           </p>
         </div>
@@ -127,10 +127,10 @@ export default function DocumentsPage() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-xl font-bold text-gray-900">{t('activationMeeting")}</h1>
+        <h1 className="text-xl font-bold text-gray-900">{t('activationMeeting')}</h1>
         <p className="text-sm text-gray-500 mt-0.5">
           {locale === 'ar' ? 'التحقق من الوثائق والتفعيل يتم حضورياً فقط'
-            : locale === 'fr' ? "La vérification des documents et l"activation se font en personne uniquement"
+            : locale === 'fr' ? "La vérification des documents et l'activation se font en personne uniquement"
             : 'Document verification and activation is in-person only'}
         </p>
       </div>
@@ -141,14 +141,14 @@ export default function DocumentsPage() {
         <div>
           <p className="text-sm font-semibold text-amber-800">
             {locale === 'ar' ? 'لا ترفع وثائق الهوية عبر الإنترنت'
-              : locale === 'fr' ? "Ne téléchargez pas vos documents d"identité en ligne"
+              : locale === 'fr' ? "Ne téléchargez pas vos documents d'identité en ligne"
               : 'Do not upload identity documents online'}
           </p>
           <p className="text-xs text-amber-700 mt-1 leading-relaxed">
             {locale === 'ar'
               ? 'لأسباب أمنية، جميع الوثائق الحساسة (الهوية، الضامن، الدخل) تُقدَّم فقط في اجتماع التفعيل الحضوري مع فريق FORSA.'
               : locale === 'fr'
-              ? "Pour des raisons de sécurité, tous les documents sensibles (identité, garant, revenus) sont présentés uniquement lors de la réunion d"activation en personne avec l"équipe FORSA."
+              ? "Pour des raisons de sécurité, tous les documents sensibles (identité, garant, revenus) sont présentés uniquement lors de la réunion d'activation en personne avec l'équipe FORSA."
               : 'For security reasons, all sensitive documents (identity, guarantor, income) are presented only at the in-person activation meeting with the FORSA team.'}
           </p>
         </div>
@@ -165,8 +165,8 @@ export default function DocumentsPage() {
             <div className="flex items-start gap-3">
               <CheckCircle size={20} className="text-teal-600 flex-shrink-0 mt-0.5" />
               <div>
-                <p className="font-semibold text-teal-800">{t('activationMeetingDesc")}</p>
-                <p className="text-sm text-teal-700 mt-1 font-medium">{t('guarantorMustAttend")}</p>
+                <p className="font-semibold text-teal-800">{t('activationMeetingDesc')}</p>
+                <p className="text-sm text-teal-700 mt-1 font-medium">{t('guarantorMustAttend')}</p>
               </div>
             </div>
           </div>
@@ -175,7 +175,7 @@ export default function DocumentsPage() {
           <Card>
             <div className="flex items-center gap-2 mb-4">
               <FileText size={16} className="text-navy-700" />
-              <p className="text-sm font-semibold text-gray-900">{t('bringDocuments")}</p>
+              <p className="text-sm font-semibold text-gray-900">{t('bringDocuments')}</p>
             </div>
             <div className="space-y-3">
               {DOCS_TO_BRING.map((doc, i) => (
@@ -211,7 +211,7 @@ export default function DocumentsPage() {
           <Card>
             <div className="flex items-center gap-2 mb-4">
               <Calendar size={16} className="text-navy-700" />
-              <p className="text-sm font-semibold text-gray-900">{t('activationSteps")}</p>
+              <p className="text-sm font-semibold text-gray-900">{t('activationSteps')}</p>
             </div>
             <div className="space-y-3">
               {steps.map((step, i) => (
@@ -229,7 +229,7 @@ export default function DocumentsPage() {
           <Card className="bg-navy-50 border-navy-100">
             <div className="flex items-center gap-2 mb-3">
               <Phone size={15} className="text-navy-700" />
-              <p className="text-sm font-semibold text-navy-800">{t('meetingContact")}</p>
+              <p className="text-sm font-semibold text-navy-800">{t('meetingContact')}</p>
             </div>
             <div className="space-y-2">
               {[
