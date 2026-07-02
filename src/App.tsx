@@ -20,9 +20,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   if (loading) return (
     <div className="min-h-screen bg-gradient-to-br from-navy-950 to-navy-800 flex items-center justify-center">
       <div className="flex flex-col items-center gap-4">
-        <div className="w-12 h-12 bg-teal-500 rounded-2xl flex items-center justify-center animate-pulse">
-          <span className="text-white font-bold text-xl">F</span>
-        </div>
+        <img src="/logo.png" alt="FORSA" className="w-12 h-12 object-contain animate-pulse" />
         <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
       </div>
     </div>

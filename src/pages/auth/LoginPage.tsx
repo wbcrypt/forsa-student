@@ -34,9 +34,7 @@ export default function LoginPage() {
       {/* Header */}
       <div className="flex items-center justify-between p-5">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-teal-500 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-sm">F</span>
-          </div>
+          <img src="/logo.png" alt="FORSA" className="w-8 h-8 object-contain" />
           <span className="text-white font-semibold">FORSA</span>
         </div>
         <div className="flex gap-1 bg-white/10 rounded-xl p-1">
@@ -56,9 +54,7 @@ export default function LoginPage() {
         <div className="w-full max-w-sm">
           {/* Logo */}
           <div className="text-center mb-8">
-            <div className="inline-flex w-16 h-16 bg-teal-500 rounded-2xl items-center justify-center mb-4 shadow-lg shadow-teal-500/25">
-              <span className="text-white font-bold text-3xl">F</span>
-            </div>
+            <img src="/logo.png" alt="FORSA" className="w-16 h-16 mx-auto mb-4 object-contain" />
             <h1 className="text-white text-2xl font-bold">{t('welcomeBack')}</h1>
             <p className="text-white/60 text-sm mt-1">{t('signInSubtitle')}</p>
           </div>
