@@ -15,7 +15,7 @@ const NOTIF_ICONS: Record<string, React.ElementType> = {
 }
 
 export default function NotificationsPage() {
-  const { t } = useLocale()
+  const { t, locale } = useLocale()
 
   const { data, isLoading } = useQuery({
     queryKey: ['notifications'],

@@ -17,7 +17,7 @@ const PIPELINE_STAGES = [
 
 export default function ApplicationPage() {
   const { user } = useAuth()
-  const { t } = useLocale()
+  const { t, locale } = useLocale()
 
   const { data: applications, isLoading } = useQuery({
     queryKey: ['student-apps', user?.id],
