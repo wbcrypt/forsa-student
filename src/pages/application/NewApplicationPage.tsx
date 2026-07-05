@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useQuery, useMutation } from '@tanstack/react-query'
 import { universityApi, applicationApi } from '../../lib/api'
-import { useAuth } from '../../context/AuthContext'
 import { useLocale } from '../../hooks/useLocale'
 import { StepProgress, FormField, Alert, Card, Spinner } from '../../components/ui'
 import { ChevronRight, Loader2 } from 'lucide-react'
@@ -15,7 +14,6 @@ interface AppForm {
 }
 
 export default function NewApplicationPage() {
-  const { user } = useAuth()
   const { t } = useLocale()
   const navigate = useNavigate()
   const [step, setStep] = useState(0)
@@ -41,8 +39,12 @@ export default function NewApplicationPage() {
   const selectedProg = programs?.find((p: any) => p.id === form.programId)
 
   const mutation = useMutation({
+    // T-207 — no studentId here: POST /applications/me resolves it
+    // server-side from the JWT identity. (This used to send `user!.id` —
+    // the auth user's id, not the actual students.id row — which was
+    // always the wrong value anyway; harmless since the backend now
+    // ignores any client-supplied studentId regardless.)
     mutationFn: () => applicationApi.create({
-      studentId: user!.id,
       universityId: form.universityId,
       programId: form.programId || undefined,
       tuitionAmount: parseFloat(form.tuitionAmount),

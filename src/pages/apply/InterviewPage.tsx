@@ -8,7 +8,7 @@ import type { Locale } from '../../lib/i18n'
 import { applicationApi } from '../../lib/api'
 import api from '../../lib/api'
 import { Alert } from '../../components/ui'
-import { Send, Loader2, CheckCircle } from 'lucide-react'
+import { Send, Loader2, CheckCircle, AlertTriangle } from 'lucide-react'
 import clsx from 'clsx'
 
 interface Message {
@@ -115,6 +115,7 @@ export default function InterviewPage() {
   const [initializing, setInitializing] = useState(true)
   const [phase, setPhase] = useState<'interview' | 'completing' | 'done' | 'error'>('interview')
   const [error, setError] = useState('')
+  const [submissionError, setSubmissionError] = useState('')
   const [isDemo, setIsDemo] = useState(false)
   const [turnCount, setTurnCount] = useState(0)
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -240,7 +241,24 @@ export default function InterviewPage() {
           aiRecommendation: wasDemo ? null : (aiReport.recommendation ?? null),
           aiDemoMode: wasDemo,
         })
-      } catch { /* submission error — still show done */ }
+      } catch (err: any) {
+        // T-207 — was a bare `catch { /* still show done */ }`: any
+        // submission failure was silently swallowed and the user still
+        // saw "Interview Complete!" even though no application was ever
+        // created. The new membership gate (POST /applications/me, 403
+        // for a non-Bronze account) makes this a real, common failure
+        // mode rather than a rare edge case — surface it honestly instead
+        // of faking success.
+        if (err?.response?.status === 403) {
+          setSubmissionError(err.response?.data?.message ||
+            'You need an active FORSA membership before submitting a financing request.')
+          setPhase('error')
+          return
+        }
+        setSubmissionError('Your interview was recorded, but submitting your financing request failed. Please contact FORSA support.')
+        setPhase('error')
+        return
+      }
 
       sessionStorage.removeItem('forsa_apply_data')
       setPhase('done')
@@ -286,6 +304,26 @@ export default function InterviewPage() {
         <Loader2 size={28} className="text-navy-800 animate-spin" />
       </div>
       <p className="text-gray-700 font-medium">{l('completing')}</p>
+    </div>
+  )
+
+  if (phase === 'error') return (
+    <div className="flex flex-col items-center justify-center min-h-[60vh] gap-5 text-center px-4">
+      <div className="w-20 h-20 bg-amber-50 rounded-2xl flex items-center justify-center">
+        <AlertTriangle size={40} className="text-amber-500" />
+      </div>
+      <div>
+        <h2 className="text-2xl font-bold text-gray-900">
+          {locale === 'ar' ? 'تعذر إرسال طلبك' : locale === 'fr' ? "Impossible d'envoyer votre demande" : "Couldn't submit your request"}
+        </h2>
+        <p className="text-gray-500 text-sm mt-2 max-w-sm leading-relaxed">{submissionError}</p>
+      </div>
+      <button onClick={() => navigate('/join')} className="btn-teal py-3 px-8">
+        {locale === 'ar' ? 'تقديم طلب عضوية' : locale === 'fr' ? "Soumettre une demande d'adhésion" : 'Submit a Membership Request'}
+      </button>
+      <button onClick={() => navigate('/')} className="text-sm text-gray-400 hover:text-gray-600">
+        {locale === 'ar' ? 'العودة إلى الرئيسية' : locale === 'fr' ? "Retour à l'accueil" : 'Back to home'}
+      </button>
     </div>
   )
 

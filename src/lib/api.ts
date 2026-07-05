@@ -101,7 +101,13 @@ export const digitalPassApi = {
 
 // ─── Applications ─────────────────────────────────────────────────────────────
 export const applicationApi = {
-  create: (data: unknown) => api.post('/applications', data),
+  // T-207 — was POST /applications (@RequirePermissions('application.create'),
+  // a staff-only CRM permission a self-registered student never holds — no
+  // role is ever assigned to those accounts — so this was silently 403ing
+  // for every real student). POST /applications/me resolves the student
+  // server-side from the JWT identity and is gated on active Bronze+
+  // membership (D-004) instead of a staff permission.
+  create: (data: unknown) => api.post('/applications/me', data),
   get: (id: string) => api.get(`/applications/${id}`),
   getStatusHistory: (id: string) => api.get(`/applications/${id}/status-history`),
 }
