@@ -76,24 +76,26 @@ async function callAI(
 
 async function callAIScore(prompt: string, isDemo: boolean): Promise<string> {
   if (isDemo) {
-    // Generate realistic demo score
+    // T-109/K-18 — this used to fabricate a Math.random()-generated
+    // "AI score" (scores.overall_forsa_score etc.) and that fake number
+    // flowed straight into the real application's aiScoreOverall field —
+    // indistinguishable from a genuine AI assessment to anyone reviewing
+    // it later, with only a small "🎭 Demo mode" chat-UI badge (never
+    // persisted) as disclosure. Demo mode now honestly reports that no
+    // real AI assessment happened — see completeInterview, which uses
+    // `demo_mode` below to null out aiScoreOverall/aiRecommendation
+    // entirely rather than submitting fabricated numbers as real ones.
     return JSON.stringify({
-      scores: {
-        educational_readiness: 72 + Math.floor(Math.random() * 15),
-        financial_readiness: 65 + Math.floor(Math.random() * 20),
-        planning_readiness: 68 + Math.floor(Math.random() * 18),
-        commitment_readiness: 75 + Math.floor(Math.random() * 15),
-        interview_quality: 70 + Math.floor(Math.random() * 20),
-        overall_forsa_score: 70 + Math.floor(Math.random() * 18),
-      },
-      executive_summary: 'The candidate demonstrated clear motivation and a realistic understanding of their financial situation. Their commitment readiness and planning awareness are strong indicators of reliability.',
-      executive_summary_fr: 'Le candidat a démontré une motivation claire et une compréhension réaliste de sa situation financière. Sa préparation et sa conscience des engagements sont des indicateurs positifs.',
-      strengths: ['Clear career vision and motivation', 'Realistic financial awareness', 'Good planning mindset'],
-      concerns: ['Payment backup plan could be strengthened'],
+      demo_mode: true,
+      scores: null,
+      executive_summary: 'AI assessment unavailable for this interview (demo mode) — no automated score was generated. This application requires manual interview review by FORSA staff.',
+      executive_summary_fr: "Évaluation IA indisponible pour cet entretien (mode démo) — aucun score automatique n'a été généré. Ce dossier nécessite une révision manuelle par l'équipe FORSA.",
+      strengths: [],
+      concerns: [],
       risk_flags: [],
-      missing_information: ['Employment status details'],
-      recommended_next_steps: ['Request supporting financial documents', 'Verify guarantor commitment'],
-      recommendation: 'Silver Candidate',
+      missing_information: ['Real AI assessment was unavailable — full manual review required'],
+      recommended_next_steps: ['Conduct manual readiness review'],
+      recommendation: null,
       interview_language: 'fr',
       interview_conducted_at: new Date().toISOString(),
     })
@@ -213,6 +215,16 @@ export default function InterviewPage() {
         .map(m => `[${m.role === 'user' ? studentData.firstName : 'FORSA AI'}] ${m.content}`)
         .join('\n\n---\n\n')
 
+      // T-109/K-18 — never submit a demo-mode fabricated score as if it
+      // were a real AI assessment. aiReport.demo_mode is set by
+      // callAIScore() above whenever the real /ai/score endpoint wasn't
+      // used (missing key, network error, or any other fallback trigger).
+      // In that case aiScoreOverall/aiRecommendation are explicitly null —
+      // the same fields a genuine assessment would populate — so a human
+      // reviewer sees "no AI score" rather than a number that looks real
+      // but was Math.random()-generated.
+      const wasDemo = isDemo || aiReport.demo_mode === true
+
       try {
         await applicationApi.create({
           universityId: studentData.universityId || undefined,
@@ -223,9 +235,10 @@ export default function InterviewPage() {
           isRenewal: studentData.isCurrentStudent === 'yes',
           interviewLanguage: lang,
           interviewTranscript: transcript,
-          aiReport: JSON.stringify(aiReport),
-          aiScoreOverall: aiReport.scores?.overall_forsa_score || null,
-          aiRecommendation: aiReport.recommendation || null,
+          aiReport: JSON.stringify({ ...aiReport, demo_mode: wasDemo }),
+          aiScoreOverall: wasDemo ? null : (aiReport.scores?.overall_forsa_score ?? null),
+          aiRecommendation: wasDemo ? null : (aiReport.recommendation ?? null),
+          aiDemoMode: wasDemo,
         })
       } catch { /* submission error — still show done */ }
 
