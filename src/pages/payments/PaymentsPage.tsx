@@ -96,6 +96,46 @@ function KonnectButton({ installmentId, amount, reference }: { installmentId: st
   )
 }
 
+// T-219 — complete payment history end-to-end, spanning every application/
+// financing period. Rendered from any page state (including the "no
+// current schedule" empty states above) since historical payments from a
+// prior period can exist independently of whether a *current* schedule does.
+function PaymentHistorySection({ paymentHistory, locale }: { paymentHistory: any[] | undefined; locale: string }) {
+  if (!paymentHistory || paymentHistory.length === 0) return null
+  return (
+    <div>
+      <p className="text-sm font-semibold text-gray-900 mb-3">
+        {locale === 'ar' ? 'سجل المدفوعات الكامل' : locale === 'fr' ? 'Historique complet des paiements' : 'Complete Payment History'}
+      </p>
+      <div className="space-y-2">
+        {paymentHistory.map((p: any) => (
+          <Card key={p.id}>
+            <div className="flex items-center justify-between gap-3">
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-gray-900">
+                  {parseFloat(p.amount).toLocaleString()} {p.currency || 'TND'}
+                </p>
+                <p className="text-xs text-gray-400 mt-0.5">
+                  {locale === 'ar' ? 'القسط' : locale === 'fr' ? 'Versement' : 'Installment'} #{p.sequence_number}
+                  {p.paid_at ? ` · ${format(new Date(p.paid_at), 'dd MMM yyyy')}` : ''}
+                  {p.payment_method ? ` · ${p.payment_method}` : ''}
+                </p>
+              </div>
+              <span className={clsx('text-xs font-medium px-2 py-0.5 rounded-full flex-shrink-0', {
+                'bg-green-100 text-green-700': p.status === 'verified',
+                'bg-amber-100 text-amber-700': p.status === 'receipt_uploaded' || p.status === 'konnect_pending',
+                'bg-gray-100 text-gray-500': !['verified', 'receipt_uploaded', 'konnect_pending'].includes(p.status),
+              })}>
+                {p.status}
+              </span>
+            </div>
+          </Card>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 export default function PaymentsPage() {
   const { user } = useAuth()
   const { t, locale } = useLocale()
@@ -108,6 +148,16 @@ export default function PaymentsPage() {
   })
 
   const latestApp = applications?.[0]
+
+  // T-219 — complete payment history end-to-end, spanning every
+  // application/financing period (renewals included), not just the current
+  // schedule below. Separate query/section: the schedule below still drives
+  // "what do I owe next" for the active financing period specifically.
+  const { data: paymentHistory } = useQuery({
+    queryKey: ['payment-history', user?.id],
+    queryFn: () => studentApi.getMyPayments().then(r => r.data),
+    enabled: !!user?.id,
+  })
 
   const { data: schedule, isLoading } = useQuery({
     queryKey: ['schedule', latestApp?.id],
@@ -132,6 +182,7 @@ export default function PaymentsPage() {
         description={locale === 'ar' ? 'ستظهر تفاصيل الدفع هنا بعد الموافقة على طلبك.'
           : locale === 'fr' ? "Les détails de paiement apparaîtront ici après l'approbation de votre demande."
           : 'Payment details will appear here after your application is approved.'} />
+      <PaymentHistorySection paymentHistory={paymentHistory} locale={locale} />
     </div>
   )
 
@@ -144,6 +195,10 @@ export default function PaymentsPage() {
         description={locale === 'ar' ? 'سيُنشأ جدول الدفع بعد اكتمال اجتماع التفعيل وتوقيع العقد.'
           : locale === 'fr' ? "L'échéancier de paiement sera généré après la réunion d'activation et la signature du contrat."
           : 'The payment schedule will be generated after your activation meeting and contract signing.'} />
+      {/* T-219 — a renewed student between financing periods (no *current*
+          schedule yet) can still have real payment history from a prior
+          period; don't hide it behind this empty state. */}
+      <PaymentHistorySection paymentHistory={paymentHistory} locale={locale} />
     </div>
   )
 
@@ -419,6 +474,13 @@ export default function PaymentsPage() {
           })}
         </div>
       </div>
+
+      {/* T-219 — complete payment history end-to-end, across every
+          application/financing period (not just the current schedule
+          above — a renewed student's prior-period payments show up here
+          even once that period's schedule is no longer "the" schedule
+          above). */}
+      <PaymentHistorySection paymentHistory={paymentHistory} locale={locale} />
 
       {/* Help */}
       <Card className="bg-navy-50 border-navy-100">

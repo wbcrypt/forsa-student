@@ -72,7 +72,12 @@ export const studentApi = {
   update: (id: string, data: unknown) => api.patch(`/students/${id}`, data),
   getScore: (id: string) => api.get(`/scores/students/${id}`),
   getApplications: (id: string) => api.get(`/students/${id}/applications`),
-  getPayments: (id: string) => api.get(`/students/${id}/payments`),
+  // T-219 — was studentApi.getPayments(id), which hits GET /students/:id/payments,
+  // a staff-only route (@RequirePermissions('payment.view')) that a student
+  // portal user 403s on. This calls the new self-scoped GET /students/me/payments
+  // instead, which resolves the student id server-side from the JWT identity and
+  // spans every payment across every application/financing period, not just one.
+  getMyPayments: () => api.get('/students/me/payments'),
 }
 
 // ─── Applications ─────────────────────────────────────────────────────────────
