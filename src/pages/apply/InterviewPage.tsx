@@ -41,13 +41,28 @@ After 8 exchanges, wrap up warmly. NEVER say approved/rejected/bronze. You do NO
 }
 
 // ─── Scoring prompt ───────────────────────────────────────────────────────────
+// T-211/D-003 — the 5 dimensions here must match
+// forsa-os/src/ai/household-stability.util.ts's HOUSEHOLD_STABILITY_WEIGHTS
+// keys exactly (householdStability/financialCapacity/academicCommitment/
+// documentationQuality/aiInterviewAssessment) — the backend recomputes the
+// actual weighted overall score from these raw per-dimension numbers
+// itself (D-003: 35/25/20/10/10) and ignores whatever "overall" figure the
+// LLM might also produce, since models are unreliable at precise weighted
+// arithmetic and a client-supplied combined score can't be trusted
+// directly either way.
 function buildScoringPrompt(data: ApplyData, messages: Message[], lang: Locale): string {
   const transcript = messages.map(m => `${m.role === 'user' ? 'Student' : 'AI'}: ${m.content}`).join('\n\n')
   return `You are a FORSA analyst. Review this ${lang} interview and return ONLY valid JSON:
 Student: ${data.firstName} ${data.lastName} | ${data.universityName} | ${data.program} | ${data.tuitionAmount} TND
 TRANSCRIPT:\n${transcript}
+Score each dimension 0-100 based on the interview and the student's stated situation:
+- householdStability: family/guarantor situation stability, housing, dependents
+- financialCapacity: ability to sustain the payment plan given income/guarantor support
+- academicCommitment: seriousness about the programme, attendance/continuation likelihood
+- documentationQuality: clarity/completeness/consistency of what the student shared
+- aiInterviewAssessment: overall impression from the conversation itself (communication, realism)
 Return exactly:
-{"scores":{"educational_readiness":<0-100>,"financial_readiness":<0-100>,"planning_readiness":<0-100>,"commitment_readiness":<0-100>,"interview_quality":<0-100>,"overall_forsa_score":<0-100>},"executive_summary":"<2-3 sentences EN>","executive_summary_fr":"<2-3 sentences FR>","strengths":["<s1>","<s2>","<s3>"],"concerns":["<c1>"],"risk_flags":[],"missing_information":[],"recommended_next_steps":["<step1>","<step2>"],"recommendation":"<Gold Candidate|Silver Candidate|Referral Candidate|Manual Review>","interview_language":"${lang}","interview_conducted_at":"${new Date().toISOString()}"}`
+{"scores":{"householdStability":<0-100>,"financialCapacity":<0-100>,"academicCommitment":<0-100>,"documentationQuality":<0-100>,"aiInterviewAssessment":<0-100>},"executive_summary":"<2-3 sentences EN>","executive_summary_fr":"<2-3 sentences FR>","strengths":["<s1>","<s2>","<s3>"],"concerns":["<c1>"],"risk_flags":[],"missing_information":[],"recommended_next_steps":["<step1>","<step2>"],"interview_language":"${lang}","interview_conducted_at":"${new Date().toISOString()}"}`
 }
 
 // ─── API calls through backend ────────────────────────────────────────────────
@@ -216,14 +231,16 @@ export default function InterviewPage() {
         .map(m => `[${m.role === 'user' ? studentData.firstName : 'FORSA AI'}] ${m.content}`)
         .join('\n\n---\n\n')
 
-      // T-109/K-18 — never submit a demo-mode fabricated score as if it
-      // were a real AI assessment. aiReport.demo_mode is set by
+      // T-109/K-18/T-211 — never submit a demo-mode fabricated score as if
+      // it were a real AI assessment. aiReport.demo_mode is set by
       // callAIScore() above whenever the real /ai/score endpoint wasn't
-      // used (missing key, network error, or any other fallback trigger).
-      // In that case aiScoreOverall/aiRecommendation are explicitly null —
-      // the same fields a genuine assessment would populate — so a human
-      // reviewer sees "no AI score" rather than a number that looks real
-      // but was Math.random()-generated.
+      // used. The backend (applications.service.ts#create) is the one
+      // that actually computes ai_score_overall/ai_recommendation now —
+      // deterministically, from aiReport.scores, using the approved D-003
+      // weights — and ignores demo-mode reports (scores: null) entirely.
+      // This client no longer sends aiScoreOverall/aiRecommendation at
+      // all; there's nothing meaningful for it to compute itself, and
+      // sending them would just be dead fields the backend already ignores.
       const wasDemo = isDemo || aiReport.demo_mode === true
 
       try {
@@ -237,9 +254,6 @@ export default function InterviewPage() {
           interviewLanguage: lang,
           interviewTranscript: transcript,
           aiReport: JSON.stringify({ ...aiReport, demo_mode: wasDemo }),
-          aiScoreOverall: wasDemo ? null : (aiReport.scores?.overall_forsa_score ?? null),
-          aiRecommendation: wasDemo ? null : (aiReport.recommendation ?? null),
-          aiDemoMode: wasDemo,
         })
       } catch (err: any) {
         // T-207 — was a bare `catch { /* still show done */ }`: any
