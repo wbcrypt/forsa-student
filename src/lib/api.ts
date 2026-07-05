@@ -64,6 +64,20 @@ export const authApi = {
     api.post('/auth/login', { email, password, tenantId: TENANT_ID }),
   me: () => api.get('/auth/me'),
   logout: () => api.post('/auth/logout'),
+  // Phase 2 D-001/T-204 — consumes the one-time token emailed on
+  // membership approval; the account is provisioned with an unusable
+  // placeholder password until this is called.
+  setPassword: (token: string, newPassword: string) =>
+    api.post('/auth/set-password', { token, newPassword }),
+}
+
+// ─── Membership (Phase 2 T-203) — public, no auth ─────────────────────────────
+export const membershipApi = {
+  create: (data: {
+    firstName: string; lastName: string; phone: string; email: string; city: string
+    universityId?: string; programme: string; academicYear: string
+    currentOrFutureStudent: 'current' | 'future'
+  }) => api.post('/membership-requests', { ...data, tenantId: TENANT_ID }),
 }
 
 // ─── Student (self) ───────────────────────────────────────────────────────────
@@ -91,6 +105,9 @@ export const applicationApi = {
 export const universityApi = {
   list: () => api.get('/universities', { params: { limit: 100, status: 'active' } }),
   getPrograms: (id: string) => api.get(`/universities/${id}/programs`),
+  // Phase 2 T-203 — public, no auth (for the anonymous Membership Request
+  // form). GET /universities requires a staff permission and would 403 here.
+  listPublic: () => api.get('/universities/public', { params: { tenantId: TENANT_ID } }),
 }
 
 // ─── Documents ────────────────────────────────────────────────────────────────

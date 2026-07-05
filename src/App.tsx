@@ -5,6 +5,8 @@ import Layout from './components/layout/Layout'
 import LoginPage from './pages/auth/LoginPage'
 import RegisterPage from './pages/auth/RegisterPage'
 import ForgotPasswordPage from './pages/auth/ForgotPasswordPage'
+import MembershipRequestPage from './pages/auth/MembershipRequestPage'
+import SetPasswordPage from './pages/auth/SetPasswordPage'
 import HomePage from './pages/HomePage'
 import ApplicationPage from './pages/application/ApplicationPage'
 import NewApplicationPage from './pages/application/NewApplicationPage'
@@ -36,6 +38,14 @@ function AppRoutes() {
     <Routes>
       <Route path="/login" element={user ? <Navigate to="/" replace /> : <LoginPage />} />
       <Route path="/register" element={user ? <Navigate to="/" replace /> : <RegisterPage />} />
+      {/* Phase 2 T-203 — genuinely public, no auth: Visitor -> Membership
+          Request. Not gated on `user` like the routes above — a visitor by
+          definition has no account yet, but if a logged-in member somehow
+          lands here there's no harm in still showing the form. */}
+      <Route path="/join" element={<MembershipRequestPage />} />
+      {/* Phase 2 D-001/T-204 — consumes the one-time token emailed on
+          membership approval. */}
+      <Route path="/set-password" element={<SetPasswordPage />} />
       <Route path="/forgot-password" element={user ? <Navigate to="/" replace /> : <ForgotPasswordPage />} />
       {/* Apply flow — accessible while logged in */}
       <Route path="/apply" element={<ProtectedRoute><ApplyLayout><ApplyPage /></ApplyLayout></ProtectedRoute>} />
