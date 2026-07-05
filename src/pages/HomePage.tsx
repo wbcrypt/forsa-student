@@ -63,10 +63,11 @@ export default function HomePage() {
       {/* Next Action — the one thing to do, always first */}
       <NextActionCard status={status} hasApplication={!!latestApp} schedule={schedule} locale={locale} />
 
-      {/* Membership Status / FORSA ID / Digital Student Pass — preview placeholders */}
+      {/* Membership Status / FORSA ID are real (T-203/T-204); Digital
+          Student Pass remains a preview placeholder until T-205/T-206 land. */}
       <div className="grid grid-cols-3 gap-3">
-        <MembershipPreviewTile locale={locale} />
-        <ForsaIdPreviewTile locale={locale} />
+        <MembershipStatusTile student={student} locale={locale} />
+        <ForsaIdTile student={student} locale={locale} />
         <DigitalPassPreviewTile locale={locale} />
       </div>
 
@@ -186,15 +187,19 @@ function NextActionCard({ status, hasApplication, schedule, locale }: {
   )
 }
 
-// ─── Preview tile shell (shared look for the 3 not-yet-real fields) ────────
-function PreviewTile({ icon: Icon, label, value, sub }: {
-  icon: any; label: string; value: string; sub: string
+// ─── Preview tile shell (shared look; `live` suppresses the "Preview" badge
+// once a tile is backed by a real endpoint — Digital Pass is still the only
+// one that isn't, pending T-205/T-206) ──────────────────────────────────────
+function PreviewTile({ icon: Icon, label, value, sub, live = false }: {
+  icon: any; label: string; value: string; sub: string; live?: boolean
 }) {
   return (
     <div className="card p-3 relative overflow-hidden">
-      <span className="absolute top-2 end-2 text-[9px] font-semibold text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded-full">
-        Preview
-      </span>
+      {!live && (
+        <span className="absolute top-2 end-2 text-[9px] font-semibold text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded-full">
+          Preview
+        </span>
+      )}
       <div className="w-8 h-8 rounded-lg bg-navy-50 text-navy-700 flex items-center justify-center mb-2">
         <Icon size={15} />
       </div>
@@ -205,30 +210,41 @@ function PreviewTile({ icon: Icon, label, value, sub }: {
   )
 }
 
-// TODO: wire to real endpoint once backend ships T-203/T-204 (POST
-// /membership-requests + Bronze issuance). Mock data only — do not treat as a
-// real membership state anywhere else in the app.
-function MembershipPreviewTile({ locale }: { locale: string }) {
+// T-203/T-204 — real, from students.membership_status (set on Membership
+// Request approval, per D-004 a pure ratchet: bronze -> silver -> gold,
+// never automatically back down). Accounts created before this migration
+// (the old T-101 direct-register flow) have no membership_status at all —
+// shown honestly as "Not a member yet" rather than defaulting to Bronze.
+const MEMBERSHIP_LABEL: Record<string, Record<string, string>> = {
+  bronze: { en: 'Bronze', fr: 'Bronze', ar: 'برونزي' },
+  silver: { en: 'Silver', fr: 'Argent', ar: 'فضي' },
+  gold: { en: 'Gold', fr: 'Or', ar: 'ذهبي' },
+  blacklisted: { en: 'Suspended', fr: 'Suspendu', ar: 'موقوف' },
+}
+function MembershipStatusTile({ student, locale }: { student: any; locale: string }) {
+  const status = student?.membership_status as string | undefined
+  const value = status ? (MEMBERSHIP_LABEL[status]?.[locale] || MEMBERSHIP_LABEL[status]?.en || status)
+    : (locale === 'ar' ? 'ليس عضواً بعد' : locale === 'fr' ? 'Pas encore membre' : 'Not a member yet')
+  const sub = student?.member_since
+    ? `${locale === 'ar' ? 'منذ' : locale === 'fr' ? 'Depuis' : 'Since'} ${format(new Date(student.member_since), 'MMM yyyy')}`
+    : (locale === 'ar' ? 'قدّم طلب عضوية' : locale === 'fr' ? "Soumettez une demande d'adhésion" : 'Submit a Membership Request')
   return (
-    <PreviewTile
-      icon={Award}
+    <PreviewTile icon={Award}
       label={locale === 'ar' ? 'العضوية' : locale === 'fr' ? 'Adhésion' : 'Membership'}
-      value={locale === 'ar' ? 'برونزي' : locale === 'fr' ? 'Bronze' : 'Bronze'}
-      sub={locale === 'ar' ? 'قريباً' : locale === 'fr' ? 'Bientôt' : 'Coming soon'}
-    />
+      value={value} sub={sub} live={!!status} />
   )
 }
 
-// TODO: wire to real endpoint once backend ships T-204 (FORSA ID generated on
-// Bronze issuance). Mock data only.
-function ForsaIdPreviewTile({ locale }: { locale: string }) {
+// T-204 — real, assigned once on Bronze issuance (MembershipService.approve,
+// FORSA-<year>-<6 hex chars>), never regenerated.
+function ForsaIdTile({ student, locale }: { student: any; locale: string }) {
+  const forsaId = student?.forsa_id as string | undefined
   return (
-    <PreviewTile
-      icon={FileText}
+    <PreviewTile icon={FileText}
       label={locale === 'ar' ? 'رقم FORSA' : 'FORSA ID'}
-      value="FRS-••••••"
-      sub={locale === 'ar' ? 'قريباً' : locale === 'fr' ? 'Bientôt' : 'Coming soon'}
-    />
+      value={forsaId || '—'}
+      sub={forsaId ? '' : (locale === 'ar' ? 'غير معيّن بعد' : locale === 'fr' ? 'Pas encore assigné' : 'Not assigned yet')}
+      live={!!forsaId} />
   )
 }
 
