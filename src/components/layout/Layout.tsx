@@ -1,5 +1,5 @@
 import { Outlet, NavLink, useLocation } from 'react-router-dom'
-import { Home, FileText, Upload, CreditCard, Bell, User } from 'lucide-react'
+import { Home, FileText, Upload, CreditCard, Bell, User, Wallet } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 import { useLocale } from '../../hooks/useLocale'
 import { LOCALES, Locale } from '../../lib/i18n'
@@ -41,6 +41,13 @@ export default function Layout() {
                 </button>
               ))}
             </div>
+
+            {/* Digital Student Pass — T-205/T-206, same secondary-page
+                convention as Notifications below (not a bottom-tab slot). */}
+            <NavLink to="/pass"
+              className="relative p-2 text-gray-500 hover:text-navy-800 hover:bg-gray-50 rounded-xl transition-colors">
+              <Wallet size={18} />
+            </NavLink>
 
             {/* Notifications */}
             <NavLink to="/notifications"

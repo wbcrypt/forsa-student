@@ -94,6 +94,11 @@ export const studentApi = {
   getMyPayments: () => api.get('/students/me/payments'),
 }
 
+// ─── Digital Student Pass (Phase 2 T-205/T-206) ───────────────────────────────
+export const digitalPassApi = {
+  getMine: () => api.get('/students/me/digital-pass'),
+}
+
 // ─── Applications ─────────────────────────────────────────────────────────────
 export const applicationApi = {
   create: (data: unknown) => api.post('/applications', data),

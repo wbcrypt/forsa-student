@@ -63,12 +63,12 @@ export default function HomePage() {
       {/* Next Action — the one thing to do, always first */}
       <NextActionCard status={status} hasApplication={!!latestApp} schedule={schedule} locale={locale} />
 
-      {/* Membership Status / FORSA ID are real (T-203/T-204); Digital
-          Student Pass remains a preview placeholder until T-205/T-206 land. */}
+      {/* Membership Status / FORSA ID / Digital Pass — all real now
+          (T-203/T-204/T-205/T-206). */}
       <div className="grid grid-cols-3 gap-3">
         <MembershipStatusTile student={student} locale={locale} />
         <ForsaIdTile student={student} locale={locale} />
-        <DigitalPassPreviewTile locale={locale} />
+        <DigitalPassTile student={student} locale={locale} />
       </div>
 
       {/* Profile Completion — real, computed from the student record */}
@@ -248,16 +248,20 @@ function ForsaIdTile({ student, locale }: { student: any; locale: string }) {
   )
 }
 
-// TODO: wire to real endpoint once backend ships T-205/T-206 (Digital Student
-// Pass generation + QR verification). Mock data only.
-function DigitalPassPreviewTile({ locale }: { locale: string }) {
+// T-205/T-206 — a pass is issued atomically alongside membership_status in
+// MembershipService.approve(), so student.membership_status being set is a
+// reliable signal the pass also exists, without an extra fetch just for
+// this tile — the /pass page itself fetches the real pass + QR code.
+function DigitalPassTile({ student, locale }: { student: any; locale: string }) {
+  const issued = !!student?.membership_status
   return (
-    <PreviewTile
-      icon={Wallet}
-      label={locale === 'ar' ? 'البطاقة الرقمية' : locale === 'fr' ? 'Carte numérique' : 'Digital Pass'}
-      value={locale === 'ar' ? 'غير متاح' : locale === 'fr' ? 'Indisponible' : 'Not issued'}
-      sub={locale === 'ar' ? 'قريباً' : locale === 'fr' ? 'Bientôt' : 'Coming soon'}
-    />
+    <Link to="/pass">
+      <PreviewTile icon={Wallet}
+        label={locale === 'ar' ? 'البطاقة الرقمية' : locale === 'fr' ? 'Carte numérique' : 'Digital Pass'}
+        value={issued ? (locale === 'ar' ? 'صادرة' : locale === 'fr' ? 'Émise' : 'Issued') : (locale === 'ar' ? 'غير متاح' : locale === 'fr' ? 'Indisponible' : 'Not issued')}
+        sub={issued ? (locale === 'ar' ? 'عرض البطاقة' : locale === 'fr' ? 'Voir la carte' : 'View pass') : (locale === 'ar' ? 'انضم أولاً' : locale === 'fr' ? "Rejoignez d'abord" : 'Join first')}
+        live={issued} />
+    </Link>
   )
 }
 
