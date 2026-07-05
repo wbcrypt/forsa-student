@@ -99,6 +99,18 @@ export const documentApi = {
     api.get(`/documents/entity/${type}/${id}`),
 }
 
+// T-111: real S3 upload — PUT the raw file bytes to the pre-signed URL returned
+// by `documentApi.getUploadUrl`. Deliberately uses a bare `axios` call (not the
+// `api` instance above): the pre-signed URL already carries its own auth
+// (SigV4 query params), and the `api` instance would otherwise prepend our own
+// baseURL/`/api/v1` prefix and attach our Bearer token — both wrong for a
+// direct-to-S3 PUT.
+export function uploadFileToS3(uploadUrl: string, file: File) {
+  return axios.put(uploadUrl, file, {
+    headers: { 'Content-Type': file.type },
+  })
+}
+
 // ─── Payments ─────────────────────────────────────────────────────────────────
 export const paymentApi = {
   getSchedule: (applicationId: string) =>

@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from './context/AuthContext'
 import Layout from './components/layout/Layout'
 import LoginPage from './pages/auth/LoginPage'
 import RegisterPage from './pages/auth/RegisterPage'
+import ForgotPasswordPage from './pages/auth/ForgotPasswordPage'
 import HomePage from './pages/HomePage'
 import ApplicationPage from './pages/application/ApplicationPage'
 import NewApplicationPage from './pages/application/NewApplicationPage'
@@ -35,6 +36,7 @@ function AppRoutes() {
     <Routes>
       <Route path="/login" element={user ? <Navigate to="/" replace /> : <LoginPage />} />
       <Route path="/register" element={user ? <Navigate to="/" replace /> : <RegisterPage />} />
+      <Route path="/forgot-password" element={user ? <Navigate to="/" replace /> : <ForgotPasswordPage />} />
       {/* Apply flow — accessible while logged in */}
       <Route path="/apply" element={<ProtectedRoute><ApplyLayout><ApplyPage /></ApplyLayout></ProtectedRoute>} />
       <Route path="/apply/interview" element={<ProtectedRoute><ApplyLayout showBack={false}><InterviewPage /></ApplyLayout></ProtectedRoute>} />

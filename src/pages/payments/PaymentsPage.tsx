@@ -3,12 +3,13 @@ import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAuth } from '../../context/AuthContext'
 import { useLocale } from '../../hooks/useLocale'
-import { studentApi, paymentApi } from '../../lib/api'
+import { studentApi, paymentApi, documentApi, uploadFileToS3 } from '../../lib/api'
 import api from '../../lib/api'
 import { Card, Spinner, EmptyState, Alert } from '../../components/ui'
 import {
   CreditCard, Copy, Check, Building2, Banknote,
-  Upload, Loader2, ChevronDown, ChevronUp, Info, Clock, CheckCircle
+  Upload, Loader2, ChevronDown, ChevronUp, Info, Clock, CheckCircle,
+  ExternalLink, Zap
 } from 'lucide-react'
 import { format } from 'date-fns'
 import clsx from 'clsx'
@@ -360,6 +361,7 @@ export default function PaymentsPage() {
       <ReceiptUpload
         installments={installments}
         applicationId={latestApp.id}
+        studentId={user!.id}
         currency={schedule.currency}
         t={t} locale={locale}
         onSuccess={() => qc.invalidateQueries({ queryKey: ['schedule', latestApp.id] })}
@@ -434,14 +436,15 @@ export default function PaymentsPage() {
 }
 
 // ─── Receipt Upload Component ──────────────────────────────────────────────────
-function ReceiptUpload({ installments, applicationId, currency, t, locale, onSuccess }: {
-  installments: any[]; applicationId: string; currency: string
+function ReceiptUpload({ installments, applicationId, studentId, currency, t, locale, onSuccess }: {
+  installments: any[]; applicationId: string; studentId: string; currency: string
   t: (k: string) => string; locale: string; onSuccess: () => void
 }) {
   const [selectedInstallment, setSelectedInstallment] = useState('')
   const [form, setForm] = useState({ paymentDate: format(new Date(), 'yyyy-MM-dd'), amount: '', bankName: '', reference: '' })
   const [file, setFile] = useState<File | null>(null)
   const [submitting, setSubmitting] = useState(false)
+  const [uploadStage, setUploadStage] = useState<'' | 'uploading' | 'confirming' | 'submitting'>('')
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState('')
 
@@ -454,7 +457,38 @@ function ReceiptUpload({ installments, applicationId, currency, t, locale, onSuc
     }
     setSubmitting(true); setError('')
     try {
-      // Upload receipt via documents API if file provided
+      // T-111: actually upload the file bytes (previously this only sent
+      // `file.name` as a string — Finance staff had nothing to inspect).
+      // Reuses the same presigned-S3 flow `documents.service.ts` already exposes
+      // for application/student/guarantor documents:
+      //   POST /documents/upload-url -> PUT file to S3 -> POST /documents/:id/confirm-upload
+      // Two backend dependencies this assumes and that had NOT landed as of this
+      // session (flagged to the orchestrator):
+      //   1. A `document_types` row with code 'payment_receipt' (active) — the
+      //      upload-url endpoint 400s with "Invalid document type" without it.
+      //   2. `POST /payments/receipts` does not yet persist the resulting
+      //      `receiptDocumentId` anywhere (its DTO/service only knows
+      //      `receiptFilename` today) — sent below anyway since it's harmless
+      //      (whitelist:true / forbidNonWhitelisted:false on the backend's
+      //      global ValidationPipe, and this route's body isn't a class-DTO, so
+      //      the extra field is simply ignored until the backend wires it up).
+      let receiptDocumentId: string | null = null
+      if (file) {
+        setUploadStage('uploading')
+        const { data: uploadInfo } = await documentApi.getUploadUrl({
+          entityType: 'student',
+          entityId: studentId,
+          documentTypeCode: 'payment_receipt',
+          fileName: file.name,
+          contentType: file.type,
+        })
+        await uploadFileToS3(uploadInfo.uploadUrl, file)
+        setUploadStage('confirming')
+        await documentApi.confirmUpload(uploadInfo.documentId, file.size)
+        receiptDocumentId = uploadInfo.documentId
+      }
+
+      setUploadStage('submitting')
       const payload: any = {
         installmentId: selectedInstallment,
         paymentDate: form.paymentDate,
@@ -462,6 +496,7 @@ function ReceiptUpload({ installments, applicationId, currency, t, locale, onSuc
         bankName: form.bankName,
         referenceNumber: form.reference,
         receiptFilename: file?.name || null,
+        receiptDocumentId,
         notes: form.bankName || form.reference
           ? `Bank: ${form.bankName || '—'} · Ref: ${form.reference || '—'}`
           : null,
@@ -474,7 +509,7 @@ function ReceiptUpload({ installments, applicationId, currency, t, locale, onSuc
       setTimeout(() => setSuccess(false), 5000)
     } catch (err: any) {
       setError(err?.response?.data?.message || (locale === 'ar' ? 'فشل التقديم. حاول مرة أخرى.' : locale === 'fr' ? 'Échec. Réessayez.' : 'Submission failed. Please try again.'))
-    } finally { setSubmitting(false) }
+    } finally { setSubmitting(false); setUploadStage('') }
   }
 
   if (pendingInstallments.length === 0) return null
@@ -558,7 +593,11 @@ function ReceiptUpload({ installments, applicationId, currency, t, locale, onSuc
         <button onClick={handleSubmit} disabled={submitting || !selectedInstallment || !form.amount || !form.paymentDate}
           className="btn-primary w-full justify-center py-3">
           {submitting ? <Loader2 size={15} className="animate-spin" /> : <Upload size={15} />}
-          {submitting ? (locale === 'ar' ? 'جاري الإرسال...' : locale === 'fr' ? 'Envoi...' : 'Submitting...') : t('submitReceipt')}
+          {submitting
+            ? (uploadStage === 'uploading'
+                ? (locale === 'ar' ? 'جاري رفع الملف...' : locale === 'fr' ? 'Téléversement du fichier...' : 'Uploading file...')
+                : (locale === 'ar' ? 'جاري الإرسال...' : locale === 'fr' ? 'Envoi...' : 'Submitting...'))
+            : t('submitReceipt')}
         </button>
 
         <p className="text-xs text-gray-400 text-center">

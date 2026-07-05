@@ -4,7 +4,7 @@ import { useLocale } from '../../hooks/useLocale'
 import { LOCALES, Locale } from '../../lib/i18n'
 import { Alert, FormField, StepProgress } from '../../components/ui'
 import { Loader2, Eye, EyeOff, ChevronRight } from 'lucide-react'
-import api from '../../lib/api'
+import api, { TENANT_ID } from '../../lib/api'
 import { useAuth } from '../../context/AuthContext'
 
 interface RegForm {
@@ -61,21 +61,39 @@ export default function RegisterPage() {
     if (!form.agreed) { setErrors({ agreed: 'You must agree to continue' }); return }
     setLoading(true); setServerError('')
     try {
-      // Create student account via the students endpoint
-      await api.post('/students', {
+      // T-101: genuinely public registration endpoint (forsa-os
+      // src/students/students.controller.ts POST /students/register) —
+      // creates a `students` row AND a real `users` row (argon2id hash) in
+      // one transaction, unlike the old staff-only POST /students CRM route
+      // this call used to hit. See forsa-os/implementation/DECISIONS.md D-001.
+      await api.post('/students/register', {
+        tenantId: TENANT_ID,
         firstName: form.firstName,
         lastName: form.lastName,
         email: form.email,
+        password: form.password,
         phonePrimary: form.phone,
         dateOfBirth: form.dateOfBirth || undefined,
         nationality: form.nationality,
         city: form.city,
         academicLevel: form.academicLevel || undefined,
       })
-      // Auto-login — note: in production this would be a separate student auth endpoint
-      // For now we try login with the submitted credentials
-      await login(form.email, form.password)
-      navigate('/')
+
+      // Log in with the credentials just submitted — requires the backend to have
+      // created a real `users` row above (T-101). Kept as a separate try/catch so
+      // we can tell the user their account WAS created even if the immediate
+      // auto-login fails (e.g. backend hasn't shipped the users-row provisioning
+      // yet, or approval is required before login works).
+      try {
+        await login(form.email, form.password)
+        navigate('/')
+      } catch {
+        setServerError(
+          'Your account was created, but automatic sign-in failed. Please try signing in manually, ' +
+          'or contact FORSA support if the problem persists.'
+        )
+        setStep(0)
+      }
     } catch (err: any) {
       const msg = err?.response?.data?.message
       setServerError(msg || 'Registration failed. This email may already be registered.')
