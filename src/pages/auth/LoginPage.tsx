@@ -92,11 +92,12 @@ export default function LoginPage() {
             </form>
           </div>
 
-          {/* Phase 2 D-004 — the Membership Request flow (/join) supersedes
-              the old direct-password /register flow as the primary path
-              for a new Visitor; /register is kept working (not removed)
-              for any account created before this migration, but no longer
-              the front door. */}
+          {/* Phase 2 D-004 — the Membership Request flow (/join) is the
+              only path for a new Visitor. The old direct-password
+              /register flow (T-101) is removed as of the 2026-07-06
+              business decision — it bypassed membership entirely and
+              created accounts permanently stuck as non-members; /register
+              now redirects here to /join. */}
           <p className="text-center text-white/50 text-sm mt-6">
             {t('noAccount')}{' '}
             <Link to="/join" className="text-teal-400 hover:text-teal-300 font-medium">Join FORSA</Link>

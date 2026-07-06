@@ -3,7 +3,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import Layout from './components/layout/Layout'
 import LoginPage from './pages/auth/LoginPage'
-import RegisterPage from './pages/auth/RegisterPage'
 import ForgotPasswordPage from './pages/auth/ForgotPasswordPage'
 import MembershipRequestPage from './pages/auth/MembershipRequestPage'
 import SetPasswordPage from './pages/auth/SetPasswordPage'
@@ -38,7 +37,15 @@ function AppRoutes() {
   return (
     <Routes>
       <Route path="/login" element={user ? <Navigate to="/" replace /> : <LoginPage />} />
-      <Route path="/register" element={user ? <Navigate to="/" replace /> : <RegisterPage />} />
+      {/* Business decision (2026-07-06) — the old T-101 direct-password
+          registration flow bypassed the Membership Request system
+          entirely: it created a real, working account with no
+          membership_status ever set, permanently stuck as a non-member
+          with no way to ever submit a financing request. It was already
+          unlinked from every page in the product, but the route itself
+          was still live and reachable. Redirects to /join (Membership
+          Request) instead of rendering it. */}
+      <Route path="/register" element={<Navigate to="/join" replace />} />
       {/* Phase 2 T-203 — genuinely public, no auth: Visitor -> Membership
           Request. Not gated on `user` like the routes above — a visitor by
           definition has no account yet, but if a logged-in member somehow

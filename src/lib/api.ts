@@ -117,7 +117,11 @@ export const applicationApi = {
   // membership (D-004) instead of a staff permission.
   create: (data: unknown) => api.post('/applications/me', data),
   get: (id: string) => api.get(`/applications/${id}`),
-  getStatusHistory: (id: string) => api.get(`/applications/${id}/status-history`),
+  // Phase 3 (browser E2E testing) discovery — called the staff-only
+  // GET /applications/:id/status-history (application.view), 403ing for
+  // every real student. Self-scoped: verifies the caller owns this
+  // application server-side.
+  getStatusHistory: (id: string) => api.get(`/applications/me/${id}/status-history`),
 }
 
 // ─── Universities ─────────────────────────────────────────────────────────────
@@ -140,9 +144,15 @@ export const universityApi = {
 export const documentApi = {
   getChecklist: (applicationId: string) =>
     api.get(`/documents/checklist/applications/${applicationId}`),
-  getUploadUrl: (data: unknown) => api.post('/documents/upload-url', data),
+  // Phase 3 (browser E2E testing) discovery — called the staff-only
+  // POST /documents/upload-url and /documents/:id/confirm-upload
+  // (document.upload), 403ing for every real student's payment-receipt
+  // upload since PaymentsPage.tsx was built. Self-scoped: the server
+  // forces entityType='student' and resolves the caller's own
+  // students.id — entityType/entityId in the request body are ignored.
+  getUploadUrl: (data: unknown) => api.post('/documents/me/upload-url', data),
   confirmUpload: (id: string, fileSize: number) =>
-    api.post(`/documents/${id}/confirm-upload`, { fileSize }),
+    api.post(`/documents/me/${id}/confirm-upload`, { fileSize }),
   getForEntity: (type: string, id: string) =>
     api.get(`/documents/entity/${type}/${id}`),
 }
