@@ -99,7 +99,7 @@ function NextActionCard({ status, hasApplication, schedule, locale }: {
     action = {
       icon: Sparkles,
       title: locale === 'ar' ? 'ابدأ رحلتك مع FORSA' : locale === 'fr' ? 'Commencez votre parcours FORSA' : 'Start your FORSA journey',
-      desc: locale === 'ar' ? 'قدّم طلب تمويل للبدء.' : locale === 'fr' ? 'Soumettez une demande de financement pour commencer.' : 'Submit a financing request to get started.',
+      desc: locale === 'ar' ? 'قدّم طلب خطة تيسير المعاليم الجامعية للبدء.' : locale === 'fr' ? 'Soumettez une demande de plan de facilitation des frais universitaires pour commencer.' : 'Submit a tuition facilitation plan request to get started.',
       cta: locale === 'ar' ? 'تقدم الآن' : locale === 'fr' ? 'Postuler maintenant' : 'Apply now',
       to: '/apply',
     }
@@ -323,7 +323,7 @@ function FinancingStatusCard({ latestApp, locale, t }: { latestApp: any; locale:
         <div className="flex items-start justify-between mb-4">
           <div>
             <p className="text-xs text-gray-400 font-medium uppercase tracking-wide">
-              {locale === 'ar' ? 'حالة التمويل' : locale === 'fr' ? 'Statut du financement' : 'Financing Status'}
+              {locale === 'ar' ? 'حالة خطة تيسير المعاليم' : locale === 'fr' ? 'Statut du plan de facilitation' : 'Tuition Facilitation Status'}
             </p>
             <p className="text-base font-semibold text-gray-900 mt-0.5">
               {latestApp.university_name || 'University'}

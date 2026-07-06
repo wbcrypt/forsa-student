@@ -36,7 +36,7 @@ export default function ApplicationPage() {
         <EmptyState
           icon={FileText}
           title={locale === 'ar' ? 'لا يوجد طلب بعد' : locale === 'fr' ? 'Pas encore de dossier' : 'No application yet'}
-          description="Apply for FORSA financing to fund your university studies."
+          description="Apply for a FORSA tuition facilitation plan to fund your university studies."
           action={<Link to="/application/new" className="btn-teal">Apply now</Link>}
         />
       </div>
@@ -120,7 +120,7 @@ function ApplicationDetail({ app }: { app: any }) {
             <p className="font-semibold text-green-800">Congratulations! Your application is approved 🎉</p>
             <p className="text-sm text-green-700 mt-1">
               You've been approved for {parseFloat(app.approved_amount || app.tuition_amount || '0').toLocaleString()} TND.
-              {app.current_status === 'approved_level2' && ' Level 2 financing — concurrent payment model.'}
+              {app.current_status === 'approved_level2' && ' Level 2 tuition facilitation — concurrent payment model.'}
             </p>
             {app.decision_explanation && (
               <p className="text-xs text-green-600 mt-2 opacity-75">{app.decision_explanation}</p>

@@ -122,7 +122,7 @@ export default function ApplyPage() {
     <div className="space-y-5 max-w-lg mx-auto">
       <div>
         <h1 className="text-xl font-bold text-gray-900">
-          {locale === 'ar' ? 'التقدم للتمويل' : locale === 'fr' ? 'Demander un financement' : 'Apply for Financing'}
+          {locale === 'ar' ? 'طلب خطة تيسير المعاليم الجامعية' : locale === 'fr' ? 'Demander un plan de facilitation des frais universitaires' : 'Apply for a Tuition Facilitation Plan'}
         </h1>
         <p className="text-sm text-gray-500 mt-0.5">
           {locale === 'ar' ? 'أكمل هذه المعلومات للبدء في مقابلتك مع FORSA'
@@ -362,12 +362,12 @@ function ConsentGate({ data, onBack }: { data: Phase1Data; onBack: () => void })
     {
       key: 'terms',
       label: { en: 'Terms of Service', fr: "Conditions d'utilisation", ar: 'شروط الخدمة' },
-      desc: { en: 'I accept the FORSA Terms of Service and understand the financing conditions.', fr: "J'accepte les Conditions d'utilisation de FORSA et comprends les conditions de financement.", ar: 'أقبل شروط خدمة FORSA وأفهم شروط التمويل.' }
+      desc: { en: 'I accept the FORSA Terms of Service and understand the conditions of the tuition facilitation plan.', fr: "J'accepte les Conditions d'utilisation de FORSA et comprends les conditions du plan de facilitation des frais universitaires.", ar: 'أقبل شروط خدمة FORSA وأفهم شروط خطة تيسير المعاليم الجامعية.' }
     },
     {
       key: 'dataProcessing',
       label: { en: 'Personal Data Processing Consent', fr: 'Consentement au traitement des données', ar: 'موافقة على معالجة البيانات الشخصية' },
-      desc: { en: 'I consent to FORSA processing my personal and financial data to evaluate my financing application.', fr: 'Je consens au traitement par FORSA de mes données personnelles et financières pour évaluer ma demande de financement.', ar: 'أوافق على قيام FORSA بمعالجة بياناتي الشخصية والمالية لتقييم طلب التمويل الخاص بي.' }
+      desc: { en: 'I consent to FORSA processing my personal and financial data to evaluate my Membership Request.', fr: 'Je consens au traitement par FORSA de mes données personnelles et financières pour évaluer ma demande d\'adhésion.', ar: 'أوافق على قيام FORSA بمعالجة بياناتي الشخصية والمالية لتقييم طلب عضويتي.' }
     },
     {
       key: 'aiNotice',

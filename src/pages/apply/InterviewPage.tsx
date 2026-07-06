@@ -266,11 +266,11 @@ export default function InterviewPage() {
         // of faking success.
         if (err?.response?.status === 403) {
           setSubmissionError(err.response?.data?.message ||
-            'You need an active FORSA membership before submitting a financing request.')
+            'You need an active FORSA membership before submitting a tuition facilitation plan request.')
           setPhase('error')
           return
         }
-        setSubmissionError('Your interview was recorded, but submitting your financing request failed. Please contact FORSA support.')
+        setSubmissionError('Your interview was recorded, but submitting your tuition facilitation plan request failed. Please contact FORSA support.')
         setPhase('error')
         return
       }
@@ -295,7 +295,7 @@ export default function InterviewPage() {
     completing: { en: 'Submitting your application…', fr: 'Envoi de votre dossier…', ar: 'جاري إرسال طلبك…' },
     doneTitle: { en: 'Interview Complete!', fr: 'Entretien terminé !', ar: 'اكتملت المقابلة!' },
     doneDesc: { en: 'Our team will review your application and determine your FORSA pathway. Every applicant becomes part of the FORSA community.', fr: 'Notre équipe examinera votre dossier et déterminera votre voie FORSA. Chaque candidat fait partie de la communauté FORSA.', ar: 'سيراجع فريقنا طلبك ويحدد مسارك في FORSA. كل متقدم يصبح جزءاً من مجتمع FORSA.' },
-    doneNotice: { en: 'Every FORSA applicant is placed in the most suitable pathway: Gold, Silver, or Bronze. Bronze members receive full ecosystem access and are prioritised when new financing capacity opens.', fr: "Chaque candidat FORSA est placé dans la voie la plus adaptée : Gold, Silver ou Bronze. Les membres Bronze bénéficient d'accès complet à l'écosystème et sont prioritaires à l'ouverture de nouvelles capacités de financement.", ar: 'يُوضع كل متقدم في FORSA في المسار الأنسب له: ذهبي أو فضي أو برونزي. يحصل الأعضاء البرونزيون على وصول كامل للمنظومة وأولوية عند فتح طاقة تمويل جديدة.' },
+    doneNotice: { en: 'Every FORSA applicant is placed in the most suitable pathway: Gold, Silver, or Bronze. Bronze members receive full ecosystem access and are prioritised when new capacity opens.', fr: "Chaque candidat FORSA est placé dans la voie la plus adaptée : Gold, Silver ou Bronze. Les membres Bronze bénéficient d'accès complet à l'écosystème et sont prioritaires à l'ouverture de nouvelles capacités.", ar: 'يُوضع كل متقدم في FORSA في المسار الأنسب له: ذهبي أو فضي أو برونزي. يحصل الأعضاء البرونزيون على وصول كامل للمنظومة وأولوية عند فتح طاقة استيعاب جديدة.' },
     goHome: { en: 'Return to my account', fr: 'Retourner à mon compte', ar: 'العودة إلى حسابي' },
     title: { en: 'FORSA Interview', fr: 'Entretien FORSA', ar: 'مقابلة FORSA' },
     subtitle: { en: 'AI Assistant · Does not make decisions', fr: 'Assistant IA · Ne prend pas de décisions', ar: 'مساعد ذكاء اصطناعي · لا يتخذ قرارات' },
