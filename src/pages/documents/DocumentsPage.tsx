@@ -23,7 +23,7 @@ const MEETING_STEPS = {
   en: [
     'Student and guarantor identity verification (original IDs)',
     'Enrollment and tuition invoice verification',
-    'Financing contract review and signature',
+    'Facilitation plan contract review and signature',
     'Lettres de change (payment commitment forms) signature',
     'Copies of all documents provided to both parties',
     'Student account activated — payment schedule confirmed',
@@ -31,7 +31,7 @@ const MEETING_STEPS = {
   fr: [
     "Vérification d'identité de l'étudiant et du garant (CIN originaux)",
     "Vérification de l'inscription et de la facture de scolarité",
-    'Révision et signature du contrat de financement',
+    'Révision et signature du contrat du plan de facilitation',
     "Signature des lettres de change (formulaires d'engagement de paiement)",
     'Remise des copies de tous les documents aux deux parties',
     'Compte étudiant activé — échéancier de paiement confirmé',
@@ -39,7 +39,7 @@ const MEETING_STEPS = {
   ar: [
     'التحقق من هوية الطالب والضامن (بطاقات الهوية الأصلية)',
     'التحقق من التسجيل وفاتورة الرسوم الدراسية',
-    'مراجعة عقد التمويل والتوقيع عليه',
+    'مراجعة عقد خطة التيسير والتوقيع عليه',
     'توقيع الكمبيالات (نماذج الالتزام بالدفع)',
     'تسليم نسخ من جميع الوثائق للطرفين',
     'تفعيل حساب الطالب — تأكيد جدول الدفع',
