@@ -15,7 +15,7 @@ export default function ProfilePage() {
 
   const { data: student, isLoading } = useQuery({
     queryKey: ['student-me', user?.id],
-    queryFn: () => studentApi.getMe(user!.id).then(r => r.data),
+    queryFn: () => studentApi.getMe().then(r => r.data),
     enabled: !!user?.id,
   })
 

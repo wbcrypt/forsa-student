@@ -109,7 +109,7 @@ export default function DocumentsPage() {
 
   const { data: applications } = useQuery({
     queryKey: ['student-apps', user?.id],
-    queryFn: () => studentApi.getApplications(user!.id).then(r => r.data),
+    queryFn: () => studentApi.getApplications().then(r => r.data),
     enabled: !!user?.id,
   })
 

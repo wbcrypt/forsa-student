@@ -21,7 +21,7 @@ export default function ApplicationPage() {
 
   const { data: applications, isLoading } = useQuery({
     queryKey: ['student-apps', user?.id],
-    queryFn: () => studentApi.getApplications(user!.id).then(r => r.data),
+    queryFn: () => studentApi.getApplications().then(r => r.data),
     enabled: !!user?.id,
   })
 

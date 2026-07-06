@@ -21,7 +21,7 @@ interface ApplyData {
   firstName: string; lastName: string; dateOfBirth: string
   phone: string; email: string; city: string; nationality: string
   universityId: string; universityName: string
-  program: string; yearOfStudy: string; tuitionAmount: string
+  programId: string; program: string; yearOfStudy: string; tuitionAmount: string
   isCurrentStudent: string; preferredLanguage: Locale
   paymentResponsible: string; householdIncome: string
   hasGuarantor: string; employmentStatus: string
@@ -246,6 +246,7 @@ export default function InterviewPage() {
       try {
         await applicationApi.create({
           universityId: studentData.universityId || undefined,
+          programId: studentData.programId || undefined,
           tuitionAmount: parseFloat(studentData.tuitionAmount) || 0,
           requestedSupportAmount: parseFloat(studentData.tuitionAmount) || 0,
           currency: 'TND',

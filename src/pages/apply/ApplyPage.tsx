@@ -24,7 +24,16 @@ interface Phase1Data {
   phone: string; email: string; city: string; nationality: string
   // Academic
   universityId: string; universityName: string
-  program: string; yearOfStudy: string; tuitionAmount: string
+  // Phase 3 (browser E2E testing) discovery — the program dropdown only
+  // ever stored the program's *name* (`program`), never its id. The
+  // final application submission (InterviewPage.tsx) never sent any
+  // program identifier at all, so applications.program_id was silently
+  // NULL for every real financing request — and Stage 1 of the pipeline
+  // (Completeness Gate) treats program_id as a hard requirement, so this
+  // wasn't just a cosmetic "No program" display gap, it permanently
+  // blocked every application at the very first pipeline stage. Added
+  // programId alongside program (name) so it can be threaded through.
+  programId: string; program: string; yearOfStudy: string; tuitionAmount: string
   isCurrentStudent: 'yes' | 'no' | ''
   preferredLanguage: Locale
   // Financial
@@ -35,7 +44,7 @@ interface Phase1Data {
 
 const EMPTY: Phase1Data = {
   firstName: '', lastName: '', dateOfBirth: '', phone: '', email: '', city: '', nationality: 'TN',
-  universityId: '', universityName: '', program: '', yearOfStudy: '', tuitionAmount: '', isCurrentStudent: '',
+  universityId: '', universityName: '', programId: '', program: '', yearOfStudy: '', tuitionAmount: '', isCurrentStudent: '',
   preferredLanguage: 'fr',
   paymentResponsible: '', householdIncome: '', hasGuarantor: '', employmentStatus: '',
 }
@@ -51,7 +60,7 @@ export default function ApplyPage() {
 
   const { data: unisData } = useQuery({
     queryKey: ['unis-for-apply'],
-    queryFn: () => universityApi.list().then(r => r.data.data || []),
+    queryFn: () => universityApi.list().then(r => r.data || []),
   })
 
   const { data: programs } = useQuery({
@@ -190,7 +199,7 @@ export default function ApplyPage() {
                 <select className="input" value={data.universityId}
                   onChange={e => {
                     const sel = (unisData || []).find((u: any) => u.id === e.target.value)
-                    setData(d => ({ ...d, universityId: e.target.value, universityName: sel?.name || '', program: '' }))
+                    setData(d => ({ ...d, universityId: e.target.value, universityName: sel?.name || '', programId: '', program: '' }))
                     if (errors.universityId) setErrors(prev => { const n = { ...prev }; delete n.universityId; return n })
                   }}>
                   <option value="">Select university</option>
@@ -200,10 +209,13 @@ export default function ApplyPage() {
 
               <FormField label={locale === 'ar' ? 'البرنامج / التخصص' : locale === 'fr' ? 'Programme / Spécialité' : 'Program / Major'} required error={errors.program}>
                 {programs && programs.length > 0 ? (
-                  <select className="input" value={data.program}
-                    onChange={e => setData(d => ({ ...d, program: e.target.value }))}>
+                  <select className="input" value={data.programId}
+                    onChange={e => {
+                      const sel = (programs || []).find((p: any) => p.id === e.target.value)
+                      setData(d => ({ ...d, programId: e.target.value, program: sel?.name || '' }))
+                    }}>
                     <option value="">Select program</option>
-                    {programs.map((p: any) => <option key={p.id} value={p.name}>{p.name}</option>)}
+                    {programs.map((p: any) => <option key={p.id} value={p.id}>{p.name}</option>)}
                   </select>
                 ) : (
                   <input className="input" value={data.program} onChange={set('program')} placeholder="e.g. Licence en Informatique" />

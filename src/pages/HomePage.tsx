@@ -31,13 +31,13 @@ export default function HomePage() {
 
   const { data: student, isLoading: studentLoading } = useQuery({
     queryKey: ['student-me', user?.id],
-    queryFn: () => studentApi.getMe(user!.id).then(r => r.data),
+    queryFn: () => studentApi.getMe().then(r => r.data),
     enabled: !!user?.id,
   })
 
   const { data: applications, isLoading: appsLoading } = useQuery({
     queryKey: ['student-apps', user?.id],
-    queryFn: () => studentApi.getApplications(user!.id).then(r => r.data),
+    queryFn: () => studentApi.getApplications().then(r => r.data),
     enabled: !!user?.id,
   })
 

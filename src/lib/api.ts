@@ -82,10 +82,18 @@ export const membershipApi = {
 
 // ─── Student (self) ───────────────────────────────────────────────────────────
 export const studentApi = {
-  getMe: (id: string) => api.get(`/students/${id}`),
+  // Phase 3 (browser E2E testing) discovery — getMe/getApplications
+  // called GET /students/:id and GET /students/:id/applications with
+  // user.id (the auth user's own account id, not the actual students.id
+  // row) — both are staff-only (student.view). Every real student's
+  // home page has 403'd on both calls since this page was first built,
+  // silently falling through to placeholder values. Fixed to the
+  // self-scoped routes, which take no id at all (resolved server-side
+  // from the JWT identity).
+  getMe: () => api.get('/students/me'),
   update: (id: string, data: unknown) => api.patch(`/students/${id}`, data),
   getScore: (id: string) => api.get(`/scores/students/${id}`),
-  getApplications: (id: string) => api.get(`/students/${id}/applications`),
+  getApplications: () => api.get('/students/me/applications'),
   // T-219 — was studentApi.getPayments(id), which hits GET /students/:id/payments,
   // a staff-only route (@RequirePermissions('payment.view')) that a student
   // portal user 403s on. This calls the new self-scoped GET /students/me/payments
@@ -114,8 +122,15 @@ export const applicationApi = {
 
 // ─── Universities ─────────────────────────────────────────────────────────────
 export const universityApi = {
-  list: () => api.get('/universities', { params: { limit: 100, status: 'active' } }),
-  getPrograms: (id: string) => api.get(`/universities/${id}/programs`),
+  // Phase 3 (browser E2E testing) discovery — list()/getPrograms() called
+  // the staff-only GET /universities and GET /:id/programs
+  // (university.view) — every real student's Financing Request form
+  // (ApplyPage.tsx) has had empty university/program dropdowns since it
+  // was built, since both calls silently 403'd. Fixed to the public,
+  // minimal-projection routes (no auth, same pattern already used
+  // correctly by the Membership Request form below).
+  list: () => api.get('/universities/public', { params: { tenantId: TENANT_ID } }),
+  getPrograms: (id: string) => api.get(`/universities/${id}/programs/public`, { params: { tenantId: TENANT_ID } }),
   // Phase 2 T-203 — public, no auth (for the anonymous Membership Request
   // form). GET /universities requires a staff permission and would 403 here.
   listPublic: () => api.get('/universities/public', { params: { tenantId: TENANT_ID } }),
@@ -146,6 +161,10 @@ export function uploadFileToS3(uploadUrl: string, file: File) {
 
 // ─── Payments ─────────────────────────────────────────────────────────────────
 export const paymentApi = {
+  // Phase 3 (browser E2E testing) discovery — called the staff-only
+  // GET /payments/schedules/applications/:id (payment.view) directly —
+  // every real student's payment schedule/next-due view 403'd. Fixed to
+  // the self-scoped route, which verifies ownership server-side.
   getSchedule: (applicationId: string) =>
-    api.get(`/payments/schedules/applications/${applicationId}`),
+    api.get(`/payments/schedules/me/applications/${applicationId}`),
 }
