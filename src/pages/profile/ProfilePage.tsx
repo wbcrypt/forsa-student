@@ -79,7 +79,7 @@ export default function ProfilePage() {
             <div className="w-20 h-20 relative">
               <svg viewBox="0 0 80 80" className="rotate-[-90deg]">
                 <circle cx="40" cy="40" r="34" fill="none" stroke="white" strokeOpacity="0.1" strokeWidth="8" />
-                <circle cx="40" cy="40" r="34" fill="none" stroke="#14b8a6" strokeWidth="8"
+                <circle cx="40" cy="40" r="34" fill="none" stroke="#00C4C8" strokeWidth="8"
                   strokeDasharray={`${((student.aggregate_score - 300) / 700) * 213.6} 213.6`}
                   strokeLinecap="round" />
               </svg>
