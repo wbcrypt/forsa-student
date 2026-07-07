@@ -15,6 +15,15 @@ const MEMBERSHIP_LABEL: Record<string, Record<string, string>> = {
   gold: { en: 'Gold', fr: 'Or', ar: 'ذهبي' },
 }
 
+// The card background was hardcoded to one navy/teal gradient regardless
+// of tier — a Bronze, Silver, and Gold member's pass all looked identical
+// apart from the text label. Give each tier its own gradient.
+const TIER_GRADIENT: Record<string, string> = {
+  bronze: 'bg-gradient-to-br from-orange-900 via-amber-800 to-orange-600',
+  silver: 'bg-gradient-to-br from-slate-600 via-gray-500 to-slate-400',
+  gold: 'bg-gradient-to-br from-amber-700 via-yellow-600 to-amber-500',
+}
+
 export default function PassPage() {
   const { locale } = useLocale()
 
@@ -49,7 +58,7 @@ export default function PassPage() {
       </h1>
 
       <div className={`rounded-3xl p-6 text-white shadow-xl relative overflow-hidden ${
-        isRevoked ? 'bg-gray-400' : 'bg-gradient-to-br from-navy-900 via-navy-800 to-teal-700'
+        isRevoked ? 'bg-gray-400' : (TIER_GRADIENT[pass.membership_status] || 'bg-gradient-to-br from-navy-900 via-navy-800 to-teal-700')
       }`}>
         {isRevoked && (
           <div className="absolute inset-0 flex items-center justify-center bg-black/40 z-10">
