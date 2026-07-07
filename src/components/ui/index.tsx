@@ -13,7 +13,7 @@ const statusMap: Record<string, { color: string; label: string }> = {
   approved_level1: { color: 'bg-green-50 text-green-700', label: 'Approved ✓' },
   approved_level2: { color: 'bg-green-50 text-green-700', label: 'Approved ✓' },
   approved_level3: { color: 'bg-teal-50 text-teal-700', label: 'Referred' },
-  rejected: { color: 'bg-amber-50 text-amber-700', label: 'Bronze Member' },
+  rejected: { color: 'bg-amber-50 text-amber-700', label: 'Not Approved' },
   on_hold: { color: 'bg-orange-50 text-orange-600', label: 'On Hold' },
   capital_queue: { color: 'bg-yellow-50 text-yellow-700', label: 'Waiting List' },
   fraud_flagged: { color: 'bg-red-50 text-red-700', label: 'Under Compliance Review' },
