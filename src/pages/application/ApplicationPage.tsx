@@ -37,7 +37,7 @@ export default function ApplicationPage() {
           icon={FileText}
           title={locale === 'ar' ? 'لا يوجد طلب بعد' : locale === 'fr' ? 'Pas encore de dossier' : 'No application yet'}
           description="Apply for a FORSA tuition facilitation plan to fund your university studies."
-          action={<Link to="/application/new" className="btn-teal">Apply now</Link>}
+          action={<Link to="/apply" className="btn-teal">Apply now</Link>}
         />
       </div>
     )
@@ -164,6 +164,8 @@ function ApplicationDetail({ app }: { app: any }) {
               {t('bronzeContact')} <a href="mailto:members@forsa.tn" className="font-medium underline">members@forsa.tn</a>
             </p>
           </div>
+
+          <Link to="/apply" className="btn-teal w-full py-3 flex items-center justify-center">{t('applyAgain')}</Link>
         </div>
       )}
 

@@ -8,7 +8,6 @@ import MembershipRequestPage from './pages/auth/MembershipRequestPage'
 import SetPasswordPage from './pages/auth/SetPasswordPage'
 import HomePage from './pages/HomePage'
 import ApplicationPage from './pages/application/ApplicationPage'
-import NewApplicationPage from './pages/application/NewApplicationPage'
 import ApplyPage from './pages/apply/ApplyPage'
 import InterviewPage from './pages/apply/InterviewPage'
 import ApplyLayout from './components/layout/ApplyLayout'
@@ -61,7 +60,12 @@ function AppRoutes() {
       <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
         <Route index element={<HomePage />} />
         <Route path="application" element={<ApplicationPage />} />
-        <Route path="application/new" element={<NewApplicationPage />} />
+        {/* NewApplicationPage retired — was a second, incomplete "apply"
+            flow (no AI interview, no guarantor question, no consent step)
+            reachable only from this page's own empty state, competing with
+            /apply (the Dashboard's actual primary CTA). One canonical
+            journey now: Bronze -> /apply -> AI interview -> submit. */}
+        <Route path="application/new" element={<Navigate to="/apply" replace />} />
         <Route path="documents" element={<DocumentsPage />} />
         <Route path="payments" element={<PaymentsPage />} />
         <Route path="profile" element={<ProfilePage />} />
