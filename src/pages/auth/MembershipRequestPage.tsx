@@ -65,7 +65,11 @@ export default function MembershipRequestPage() {
       })
       setDone(true)
     } catch (err: any) {
-      setServerError(err?.response?.data?.message || 'Submission failed. Please try again.')
+      const fieldErrors: string[] | undefined = err?.response?.data?.errors
+      const message = Array.isArray(fieldErrors) && fieldErrors.length > 0
+        ? fieldErrors.join(' ')
+        : err?.response?.data?.message || 'Submission failed. Please try again.'
+      setServerError(message)
     } finally { setLoading(false) }
   }
 
