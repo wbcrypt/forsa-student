@@ -7,13 +7,6 @@ import { StatusBadge, Card, Spinner, EmptyState } from '../../components/ui'
 import { FileText, ChevronRight, Clock, CheckCircle, AlertCircle, Hourglass, ListChecks } from 'lucide-react'
 import { format } from 'date-fns'
 
-const PIPELINE_STAGES = [
-  { key: 'received', label: 'Received', statuses: ['new_lead', 'contacted'] },
-  { key: 'documents', label: 'Documents', statuses: ['waiting_for_documents', 'documents_received'] },
-  { key: 'review', label: 'Under Review', statuses: ['under_review'] },
-  { key: 'decision', label: 'Decision', statuses: ['approved_level1', 'approved_level2', 'approved_level3', 'rejected', 'on_hold'] },
-  { key: 'active', label: 'Active', statuses: ['contract_sent', 'contract_signed', 'active_student', 'completed'] },
-]
 
 export default function ApplicationPage() {
   const { user } = useAuth()
@@ -54,8 +47,10 @@ function ApplicationDetail({ app }: { app: any }) {
     queryFn: () => applicationApi.getStatusHistory(app.id).then(r => r.data),
   })
 
-  // Find current stage
-  const currentStageIndex = PIPELINE_STAGES.findIndex(s => s.statuses.includes(app.current_status))
+  const { data: timeline } = useQuery({
+    queryKey: ['app-timeline', app.id],
+    queryFn: () => applicationApi.getTimeline(app.id).then(r => r.data),
+  })
 
   const isApproved = ['approved_level1', 'approved_level2', 'approved_level3'].includes(app.current_status)
   const isRejected = app.current_status === 'rejected'
@@ -231,16 +226,22 @@ function ApplicationDetail({ app }: { app: any }) {
         </div>
       )}
 
-      {/* Pipeline progress */}
+      {/* Application Timeline — workflow architecture redesign: plain-
+          language customer-journey milestones (Application Started,
+          Application Submitted, Documents Verified, Guarantor Status,
+          Under Review, Decision, University Confirmation, Active
+          Student), computed server-side from the exact same data the
+          admin's internal Pipeline view uses, so the two can never
+          disagree about where the application actually stands — they
+          just describe it in completely different vocabularies. */}
       <Card>
-        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-4">Application Progress</p>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-4">Application Timeline</p>
         <div className="space-y-4">
-          {PIPELINE_STAGES.map((stage, i) => {
-            const isCompleted = i < currentStageIndex
-            const isCurrent = i === currentStageIndex
-            const isPending = i > currentStageIndex
+          {(timeline?.milestones || []).map((m: any, i: number) => {
+            const isCompleted = m.status === 'done'
+            const isCurrent = m.status === 'current'
             return (
-              <div key={stage.key} className="flex items-start gap-3">
+              <div key={m.key} className="flex items-start gap-3">
                 <div className="flex flex-col items-center mt-0.5">
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
                     isCompleted ? 'bg-teal-500' : isCurrent ? 'bg-navy-800' : 'bg-gray-100'
@@ -252,15 +253,18 @@ function ApplicationDetail({ app }: { app: any }) {
                       : <span className="text-xs text-gray-400 font-medium">{i + 1}</span>
                     }
                   </div>
-                  {i < PIPELINE_STAGES.length - 1 && (
+                  {i < (timeline?.milestones.length || 0) - 1 && (
                     <div className={`w-0.5 h-6 mt-1 ${isCompleted ? 'bg-teal-300' : 'bg-gray-100'}`} />
                   )}
                 </div>
                 <div className="pb-2">
                   <p className={`text-sm font-medium ${isCurrent ? 'text-navy-800' : isCompleted ? 'text-teal-700' : 'text-gray-400'}`}>
-                    {stage.label}
+                    {m.label}
                   </p>
-                  {isCurrent && (
+                  {m.detail && (isCurrent || isCompleted) && (
+                    <p className="text-xs text-gray-500 mt-0.5">{m.detail}</p>
+                  )}
+                  {isCurrent && !m.detail && (
                     <p className="text-xs text-gray-500 mt-0.5">Currently here</p>
                   )}
                 </div>

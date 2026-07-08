@@ -133,6 +133,12 @@ export const applicationApi = {
   getStatusHistory: (id: string) => api.get(`/applications/me/${id}/status-history`),
   // Phase 10 — Waiting List Experience.
   getQueuePosition: (id: string) => api.get(`/applications/me/${id}/queue-position`),
+  // Workflow architecture redesign — the Student Timeline view (plain-
+  // language customer-journey milestones), replacing the old hardcoded
+  // 5-stage tracker that mixed internal CRM status names into student-
+  // facing copy. Computed server-side from the same data the admin
+  // Pipeline view uses, so the two can never disagree.
+  getTimeline: (id: string) => api.get(`/applications/me/${id}/timeline`),
 }
 
 // ─── Universities ─────────────────────────────────────────────────────────────
