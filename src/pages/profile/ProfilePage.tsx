@@ -35,7 +35,16 @@ export default function ProfilePage() {
   const qc = useQueryClient()
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
   const [editing, setEditing] = useState(false)
-  const [form, setForm] = useState({ phonePrimary: '', city: '', nationality: '', dateOfBirth: '', academicLevel: '' })
+  const [form, setForm] = useState({
+    phonePrimary: '', city: '', nationality: '', dateOfBirth: '', academicLevel: '',
+    // Phase 13 (Case Management) — Step 1 of the Case: "the student must
+    // complete a complete financial profile... to fully understand the
+    // student's situation before review." FORSA evaluates Student +
+    // Guarantor + Educational Request together, not the student alone.
+    address: '', employmentStatus: '', monthlyIncome: '', hasScholarship: false,
+    scholarshipDetails: '', existingLoansAmount: '', otherFinancialCommitments: '',
+    livingSituation: '', emergencyContactName: '', emergencyContactPhone: '', emergencyContactRelationship: '',
+  })
 
   const { data: student, isLoading } = useQuery({
     queryKey: ['student-me', user?.id],
@@ -51,6 +60,17 @@ export default function ProfilePage() {
         nationality: student.nationality?.trim() || '',
         dateOfBirth: student.date_of_birth ? student.date_of_birth.slice(0, 10) : '',
         academicLevel: student.academic_level || '',
+        address: student.address || '',
+        employmentStatus: student.employment_status || '',
+        monthlyIncome: student.monthly_income ?? '',
+        hasScholarship: !!student.has_scholarship,
+        scholarshipDetails: student.scholarship_details || '',
+        existingLoansAmount: student.existing_loans_amount ?? '',
+        otherFinancialCommitments: student.other_financial_commitments || '',
+        livingSituation: student.living_situation || '',
+        emergencyContactName: student.emergency_contact_name || '',
+        emergencyContactPhone: student.emergency_contact_phone || '',
+        emergencyContactRelationship: student.emergency_contact_relationship || '',
       })
     }
   }, [student])
@@ -145,6 +165,70 @@ export default function ProfilePage() {
                 {ACADEMIC_LEVELS.map(l => <option key={l.value} value={l.value}>{l.label}</option>)}
               </select>
             </FormField>
+            <FormField label="Address">
+              <input className="input" value={form.address}
+                onChange={e => setForm(f => ({ ...f, address: e.target.value }))} />
+            </FormField>
+
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide pt-3">Financial Profile</p>
+            <FormField label="Employment Status">
+              <select className="input" value={form.employmentStatus}
+                onChange={e => setForm(f => ({ ...f, employmentStatus: e.target.value }))}>
+                <option value="">—</option>
+                <option value="unemployed">Unemployed / Full-time student</option>
+                <option value="part_time">Part-time</option>
+                <option value="full_time">Full-time</option>
+                <option value="freelance">Freelance</option>
+              </select>
+            </FormField>
+            <FormField label="Monthly Income (TND)">
+              <input type="number" className="input" value={form.monthlyIncome}
+                onChange={e => setForm(f => ({ ...f, monthlyIncome: e.target.value }))} />
+            </FormField>
+            <FormField label="Existing Loans (TND)">
+              <input type="number" className="input" value={form.existingLoansAmount}
+                onChange={e => setForm(f => ({ ...f, existingLoansAmount: e.target.value }))} />
+            </FormField>
+            <label className="flex items-center gap-2 text-sm text-gray-600">
+              <input type="checkbox" checked={form.hasScholarship}
+                onChange={e => setForm(f => ({ ...f, hasScholarship: e.target.checked }))} />
+              I have a scholarship
+            </label>
+            {form.hasScholarship && (
+              <FormField label="Scholarship Details">
+                <input className="input" value={form.scholarshipDetails}
+                  onChange={e => setForm(f => ({ ...f, scholarshipDetails: e.target.value }))} />
+              </FormField>
+            )}
+            <FormField label="Other Financial Commitments">
+              <input className="input" value={form.otherFinancialCommitments}
+                onChange={e => setForm(f => ({ ...f, otherFinancialCommitments: e.target.value }))} />
+            </FormField>
+
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide pt-3">Personal</p>
+            <FormField label="Living Situation">
+              <select className="input" value={form.livingSituation}
+                onChange={e => setForm(f => ({ ...f, livingSituation: e.target.value }))}>
+                <option value="">—</option>
+                <option value="with_family">With family</option>
+                <option value="shared_housing">Shared housing</option>
+                <option value="independent">Independent</option>
+                <option value="university_housing">University housing</option>
+              </select>
+            </FormField>
+            <FormField label="Emergency Contact Name">
+              <input className="input" value={form.emergencyContactName}
+                onChange={e => setForm(f => ({ ...f, emergencyContactName: e.target.value }))} />
+            </FormField>
+            <FormField label="Emergency Contact Phone">
+              <input className="input" value={form.emergencyContactPhone}
+                onChange={e => setForm(f => ({ ...f, emergencyContactPhone: e.target.value }))} />
+            </FormField>
+            <FormField label="Emergency Contact Relationship">
+              <input className="input" value={form.emergencyContactRelationship}
+                onChange={e => setForm(f => ({ ...f, emergencyContactRelationship: e.target.value }))} />
+            </FormField>
+
             <div className="flex gap-3 pt-2">
               <button onClick={() => setEditing(false)} className="btn-secondary flex-1 text-sm py-2">
                 {t('cancel')}

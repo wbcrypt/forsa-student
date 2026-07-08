@@ -274,6 +274,29 @@ function ApplicationDetail({ app }: { app: any }) {
         </div>
       </Card>
 
+      {/* Phase 13 (Case Management) — "Student should always know: Case
+          Status, Case Progress, Next Required Action." */}
+      {timeline?.nextAction && (
+        <Card className="bg-navy-50 border-navy-100">
+          <p className="text-xs font-semibold text-navy-500 uppercase tracking-wide mb-1">Next Step</p>
+          <p className="text-sm font-medium text-navy-900">{timeline.nextAction}</p>
+        </Card>
+      )}
+
+      {timeline?.meeting && (
+        <Card>
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Activation Meeting</p>
+          <div className="space-y-1.5 text-sm">
+            <p><span className="text-gray-500">Reference:</span> <span className="font-medium text-gray-900">{timeline.meeting.reference_number}</span></p>
+            <p><span className="text-gray-500">Date & Time:</span> <span className="font-medium text-gray-900">{new Date(timeline.meeting.scheduled_at).toLocaleString()}</span></p>
+            <p><span className="text-gray-500">Location:</span> <span className="font-medium text-gray-900">{timeline.meeting.office_location}</span></p>
+            {timeline.meeting.special_instructions && (
+              <p className="text-xs text-gray-500 mt-2">{timeline.meeting.special_instructions}</p>
+            )}
+          </div>
+        </Card>
+      )}
+
       {/* Status history */}
       {history && history.length > 0 && (
         <Card>
