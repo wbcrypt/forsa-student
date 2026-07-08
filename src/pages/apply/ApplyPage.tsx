@@ -6,17 +6,36 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { useLocale } from '../../hooks/useLocale'
 import { LOCALES, Locale } from '../../lib/i18n'
-import { universityApi, documentApi, uploadFileToS3 } from '../../lib/api'
+import { universityApi } from '../../lib/api'
 import { useQuery } from '@tanstack/react-query'
 import { Alert, Card, FormField, Spinner, StepProgress } from '../../components/ui'
-import { ChevronRight, ChevronLeft, Loader2, CheckCircle, Upload } from 'lucide-react'
+import { ChevronRight, ChevronLeft } from 'lucide-react'
 import clsx from 'clsx'
 
+// Phase 14 (Final Case Flow Refinement) — "No document upload during the
+// application. Documents are verified physically during the meeting."
+// The Documents step from the workflow alignment fix is removed; CIN and
+// other paperwork are now verified in person at the activation meeting.
 const STEPS_LABELS: Record<Locale, string[]> = {
-  en: ['Your Profile', 'Financial', 'Documents', 'Guarantor', 'Legal Consent', 'AI Interview'],
-  fr: ['Votre profil', 'Situation financière', 'Documents', 'Garant', 'Consentement', 'Entretien IA'],
-  ar: ['ملفك', 'الوضع المالي', 'الوثائق', 'الضامن', 'الموافقة', 'المقابلة'],
+  en: ['Your Profile', 'Financial', 'Guarantor', 'Legal Consent', 'AI Interview'],
+  fr: ['Votre profil', 'Situation financière', 'Garant', 'Consentement', 'Entretien IA'],
+  ar: ['ملفك', 'الوضع المالي', 'الضامن', 'الموافقة', 'المقابلة'],
 }
+
+// Phase 14 — "tuition and plan values must come from the university/
+// program configuration." These constants mirror
+// stability-score.util.ts's PLAN_MONTHS/PLATFORM_FEE_TND on the backend —
+// duplicated here only for the live estimate display; createForSelf never
+// trusts anything computed client-side.
+const PLAN_MONTHS: Record<'silver' | 'gold', number> = { silver: 10, gold: 12 }
+const PLATFORM_FEE_TND = 30
+
+const WHY_FORSA_OPTIONS: { value: string; label: Record<Locale, string> }[] = [
+  { value: 'budget_fit', label: { en: 'Monthly payments fit my budget', fr: 'Les mensualités correspondent à mon budget', ar: 'الأقساط الشهرية تناسب ميزانيتي' } },
+  { value: 'cannot_pay_upfront', label: { en: 'I cannot pay tuition upfront', fr: "Je ne peux pas payer les frais de scolarité d'avance", ar: 'لا يمكنني دفع الرسوم الدراسية مقدمًا' } },
+  { value: 'cash_flow', label: { en: 'I want better cash-flow management', fr: 'Je veux mieux gérer ma trésorerie', ar: 'أريد إدارة أفضل للتدفق النقدي' } },
+  { value: 'other', label: { en: 'Other', fr: 'Autre', ar: 'أخرى' } },
+]
 
 interface Phase1Data {
   // Personal
@@ -33,50 +52,50 @@ interface Phase1Data {
   // wasn't just a cosmetic "No program" display gap, it permanently
   // blocked every application at the very first pipeline stage. Added
   // programId alongside program (name) so it can be threaded through.
-  programId: string; program: string; yearOfStudy: string; tuitionAmount: string
+  programId: string; program: string; yearOfStudy: string
+  // Phase 14 — read-only, populated from the selected program's
+  // tuition_amount. The student never types this; createForSelf
+  // re-derives it server-side regardless and ignores whatever (if
+  // anything) is sent here.
+  programTuition: number | null
   isCurrentStudent: 'yes' | 'no' | ''
   preferredLanguage: Locale
+  // Phase 14 — the plan the student requests (a preference, not a
+  // decision — the admin still makes the actual tier decision) and the
+  // required 30 TND/month administrative fee acknowledgment.
+  requestedTier: 'silver' | 'gold' | ''
+  platformFeeAcknowledged: boolean
+  // Optional, analytics-only — never used in scoring or decisioning.
+  forsaChoiceReason: string
   // Financial
   paymentResponsible: string; householdIncome: string
   hasGuarantor: 'yes' | 'no' | ''
   employmentStatus: string
   // Workflow alignment fix (manual pilot testing) — the admin pipeline's
-  // Stage 1 Completeness Gate has always required a guarantor on file and
-  // 4 specific documents (national_id, bac_diploma, university_acceptance,
-  // income_proof), but nothing in this wizard ever collected them, so
-  // every self-submitted application was created guaranteed to fail the
-  // very first pipeline stage. Guarantor details and document uploads are
-  // now mandatory wizard steps instead of happening — or not — separately
-  // after the fact.
+  // Stage 1 Completeness Gate has always required a guarantor on file.
+  // Guarantor details are collected as a mandatory wizard step; the
+  // invitation is sent only after the application is actually created
+  // (see InterviewPage.tsx).
   guarantorFirstName: string; guarantorLastName: string; guarantorEmail: string; guarantorRelationship: string
-  documentIds: Record<string, string>
 }
 
 const EMPTY: Phase1Data = {
   firstName: '', lastName: '', dateOfBirth: '', phone: '', email: '', city: '', nationality: 'TN',
-  universityId: '', universityName: '', programId: '', program: '', yearOfStudy: '', tuitionAmount: '', isCurrentStudent: '',
+  universityId: '', universityName: '', programId: '', program: '', yearOfStudy: '', programTuition: null, isCurrentStudent: '',
   preferredLanguage: 'fr',
+  requestedTier: '', platformFeeAcknowledged: false, forsaChoiceReason: '',
   paymentResponsible: '', householdIncome: '', hasGuarantor: '', employmentStatus: '',
   guarantorFirstName: '', guarantorLastName: '', guarantorEmail: '', guarantorRelationship: '',
-  documentIds: {},
 }
-
-const REQUIRED_DOCUMENT_TYPES: { code: string; label: Record<Locale, string> }[] = [
-  { code: 'national_id', label: { en: 'National ID Card', fr: "Carte d'identité nationale", ar: 'بطاقة الهوية الوطنية' } },
-  { code: 'bac_diploma', label: { en: 'Bac Diploma', fr: 'Diplôme du Bac', ar: 'شهادة الباكالوريا' } },
-  { code: 'university_acceptance', label: { en: 'University Acceptance Letter', fr: "Lettre d'admission universitaire", ar: 'رسالة قبول الجامعة' } },
-  { code: 'income_proof', label: { en: 'Income Proof', fr: 'Justificatif de revenus', ar: 'إثبات الدخل' } },
-]
 
 export default function ApplyPage() {
   const { user } = useAuth()
   const { t, locale, changeLocale } = useLocale()
   const navigate = useNavigate()
-  const [phase, setPhase] = useState<1 | 2 | 3 | 4 | 5>(1)
+  const [phase, setPhase] = useState<1 | 2 | 3 | 4>(1)
   const [data, setData] = useState<Phase1Data>({ ...EMPTY, preferredLanguage: locale })
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [serverError, setServerError] = useState('')
-  const [uploading, setUploading] = useState<string | null>(null)
 
   const { data: unisData } = useQuery({
     queryKey: ['unis-for-apply'],
@@ -102,9 +121,13 @@ export default function ApplyPage() {
     if (!data.phone.trim()) e.phone = 'Required'
     if (!data.city.trim()) e.city = 'Required'
     if (!data.universityId) e.universityId = 'Please select a university'
-    if (!data.program.trim()) e.program = 'Required'
-    if (!data.tuitionAmount || parseFloat(data.tuitionAmount) <= 0) e.tuitionAmount = 'Enter a valid amount'
+    // Phase 14 — no free-text program fallback anymore: tuition must come
+    // from a real program's configuration, so a program must be a real
+    // selection, not typed text.
+    if (!data.programId) e.programId = 'Please select a program'
     if (!data.isCurrentStudent) e.isCurrentStudent = 'Required'
+    if (!data.requestedTier) e.requestedTier = 'Please select a plan'
+    if (!data.platformFeeAcknowledged) e.platformFeeAcknowledged = 'Required'
     setErrors(e)
     return Object.keys(e).length === 0
   }
@@ -119,20 +142,6 @@ export default function ApplyPage() {
     return Object.keys(e).length === 0
   }
 
-  // Workflow alignment fix — the student must not be able to reach
-  // submission with a required document missing (requirement 2). Checked
-  // client-side here for immediate feedback; createForSelf enforces the
-  // same requirement server-side regardless, so this can never be
-  // bypassed by skipping straight to the interview route.
-  const validateDocuments = (): boolean => {
-    const missing = REQUIRED_DOCUMENT_TYPES.filter(d => !data.documentIds[d.code])
-    if (missing.length) {
-      setServerError(locale === 'ar' ? 'يرجى رفع جميع الوثائق المطلوبة' : locale === 'fr' ? 'Veuillez téléverser tous les documents requis' : 'Please upload all required documents')
-      return false
-    }
-    return true
-  }
-
   const validateGuarantor = (): boolean => {
     const e: Record<string, string> = {}
     if (!data.guarantorFirstName.trim()) e.guarantorFirstName = 'Required'
@@ -140,23 +149,6 @@ export default function ApplyPage() {
     if (!data.guarantorEmail.trim() || !data.guarantorEmail.includes('@')) e.guarantorEmail = 'Enter a valid email'
     setErrors(e)
     return Object.keys(e).length === 0
-  }
-
-  const handleDocumentUpload = async (documentTypeCode: string, file: File) => {
-    setUploading(documentTypeCode)
-    setServerError('')
-    try {
-      const { data: uploadInfo } = await documentApi.getUploadUrl({
-        documentTypeCode, fileName: file.name, contentType: file.type,
-      })
-      await uploadFileToS3(uploadInfo.uploadUrl, file)
-      await documentApi.confirmUpload(uploadInfo.documentId, file.size)
-      setData(d => ({ ...d, documentIds: { ...d.documentIds, [documentTypeCode]: uploadInfo.documentId } }))
-    } catch (err: any) {
-      setServerError(err?.response?.data?.message || (locale === 'ar' ? 'فشل الرفع. حاول مرة أخرى.' : locale === 'fr' ? 'Échec du téléversement. Réessayez.' : 'Upload failed. Please try again.'))
-    } finally {
-      setUploading(null)
-    }
   }
 
   const handleNext = () => {
@@ -169,17 +161,14 @@ export default function ApplyPage() {
     } else if (phase === 2 && validate2()) {
       setPhase(3)
       window.scrollTo({ top: 0, behavior: 'smooth' })
-    } else if (phase === 3 && validateDocuments()) {
+    } else if (phase === 3 && validateGuarantor()) {
       setPhase(4)
-      window.scrollTo({ top: 0, behavior: 'smooth' })
-    } else if (phase === 4 && validateGuarantor()) {
-      setPhase(5)
       window.scrollTo({ top: 0, behavior: 'smooth' })
     }
   }
 
-  if (phase === 5) {
-    return <ConsentGate data={data} onBack={() => setPhase(4)} />
+  if (phase === 4) {
+    return <ConsentGate data={data} onBack={() => setPhase(3)} />
   }
 
   const steps = STEPS_LABELS[locale] || STEPS_LABELS.en
@@ -265,7 +254,7 @@ export default function ApplyPage() {
                 <select className="input" value={data.universityId}
                   onChange={e => {
                     const sel = (unisData || []).find((u: any) => u.id === e.target.value)
-                    setData(d => ({ ...d, universityId: e.target.value, universityName: sel?.name || '', programId: '', program: '' }))
+                    setData(d => ({ ...d, universityId: e.target.value, universityName: sel?.name || '', programId: '', program: '', programTuition: null }))
                     if (errors.universityId) setErrors(prev => { const n = { ...prev }; delete n.universityId; return n })
                   }}>
                   <option value="">Select university</option>
@@ -273,18 +262,28 @@ export default function ApplyPage() {
                 </select>
               </FormField>
 
-              <FormField label={locale === 'ar' ? 'البرنامج / التخصص' : locale === 'fr' ? 'Programme / Spécialité' : 'Program / Major'} required error={errors.program}>
-                {programs && programs.length > 0 ? (
-                  <select className="input" value={data.programId}
+              {/* Phase 14 — "the student must NOT manually enter tuition
+                  amount... it must come from the university/program
+                  configuration." No free-text fallback anymore: a program
+                  must be a real, selected configuration so its tuition can
+                  be loaded automatically. */}
+              <FormField label={locale === 'ar' ? 'البرنامج / التخصص' : locale === 'fr' ? 'Programme / Spécialité' : 'Program / Major'} required error={errors.programId}>
+                {data.universityId && programs && programs.length === 0 ? (
+                  <p className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+                    {locale === 'ar' ? 'لا توجد برامج مُهيأة بعد لهذه الجامعة. يرجى التواصل مع فريق FORSA.'
+                      : locale === 'fr' ? "Aucun programme n'est encore configuré pour cette université. Veuillez contacter l'équipe FORSA."
+                      : 'No programs are configured for this university yet. Please contact the FORSA team.'}
+                  </p>
+                ) : (
+                  <select className="input" value={data.programId} disabled={!data.universityId}
                     onChange={e => {
                       const sel = (programs || []).find((p: any) => p.id === e.target.value)
-                      setData(d => ({ ...d, programId: e.target.value, program: sel?.name || '' }))
+                      setData(d => ({ ...d, programId: e.target.value, program: sel?.name || '', programTuition: sel?.tuition_amount ? Number(sel.tuition_amount) : null }))
+                      if (errors.programId) setErrors(prev => { const n = { ...prev }; delete n.programId; return n })
                     }}>
-                    <option value="">Select program</option>
-                    {programs.map((p: any) => <option key={p.id} value={p.id}>{p.name}</option>)}
+                    <option value="">{locale === 'ar' ? 'اختر البرنامج' : locale === 'fr' ? 'Sélectionner le programme' : 'Select program'}</option>
+                    {(programs || []).map((p: any) => <option key={p.id} value={p.id}>{p.name}</option>)}
                   </select>
-                ) : (
-                  <input className="input" value={data.program} onChange={set('program')} placeholder="e.g. Licence en Informatique" />
                 )}
               </FormField>
 
@@ -308,12 +307,98 @@ export default function ApplyPage() {
                 </FormField>
               </div>
 
-              <FormField label={locale === 'ar' ? 'مبلغ الرسوم الدراسية (TND)' : locale === 'fr' ? 'Frais de scolarité (TND)' : 'Tuition Amount (TND)'} required error={errors.tuitionAmount}>
-                <div className="relative">
-                  <input type="number" className="input pe-16" value={data.tuitionAmount} onChange={set('tuitionAmount')} placeholder="3500" min="0" />
-                  <span className="absolute end-4 top-1/2 -translate-y-1/2 text-xs text-gray-400 font-medium">TND</span>
+              {data.programId && (
+                <div className="bg-gray-50 rounded-xl p-3 flex items-center justify-between">
+                  <span className="text-sm text-gray-500">
+                    {locale === 'ar' ? 'الرسوم الدراسية' : locale === 'fr' ? 'Frais de scolarité' : 'Tuition amount'}
+                  </span>
+                  <span className="text-sm font-bold text-gray-900">
+                    {data.programTuition !== null ? `${data.programTuition.toLocaleString()} TND` : '—'}
+                  </span>
                 </div>
-              </FormField>
+              )}
+            </div>
+          </Card>
+
+          {/* Phase 14 — "Student selects: Requested plan: Silver or Gold.
+              System displays: tuition amount, plan structure, estimated
+              monthly payment, 30 TND/month administrative platform fee,
+              total estimated monthly amount." A preference the student
+              expresses, not a decision — the admin still makes the actual
+              tier decision at approval time. */}
+          {data.programId && data.programTuition !== null && (
+            <Card>
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
+                {locale === 'ar' ? 'الخطة المطلوبة' : locale === 'fr' ? 'Plan demandé' : 'Requested Plan'}
+              </p>
+              {errors.requestedTier && <p className="text-xs text-red-500 mb-2">{errors.requestedTier}</p>}
+              <div className="grid grid-cols-2 gap-3 mb-4">
+                {(['silver', 'gold'] as const).map(tier => (
+                  <button key={tier} type="button"
+                    onClick={() => { setData(d => ({ ...d, requestedTier: tier })); if (errors.requestedTier) setErrors(p => { const n = { ...p }; delete n.requestedTier; return n }) }}
+                    className={clsx('py-3 rounded-xl border-2 text-sm font-semibold transition-all',
+                      data.requestedTier === tier ? 'border-navy-800 bg-navy-800 text-white' : 'border-gray-200 text-gray-600 hover:border-gray-300')}>
+                    {tier === 'gold' ? '🥇' : '🥈'} {tier === 'gold' ? (locale === 'ar' ? 'ذهبي' : locale === 'fr' ? 'Gold' : 'Gold') : (locale === 'ar' ? 'فضي' : locale === 'fr' ? 'Silver' : 'Silver')}
+                  </button>
+                ))}
+              </div>
+
+              {data.requestedTier && (() => {
+                const months = PLAN_MONTHS[data.requestedTier as 'silver' | 'gold']
+                const tuition = data.programTuition || 0
+                const estimatedMonthly = tuition / months
+                const total = estimatedMonthly + PLATFORM_FEE_TND
+                return (
+                  <div className="bg-navy-50 rounded-xl p-4 space-y-2 mb-4">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-navy-600">{locale === 'ar' ? 'هيكل الخطة' : locale === 'fr' ? 'Structure du plan' : 'Plan structure'}</span>
+                      <span className="font-semibold text-navy-900">{months} {locale === 'ar' ? 'شهرًا' : locale === 'fr' ? 'mois' : 'months'}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-navy-600">{locale === 'ar' ? 'القسط الشهري المقدر' : locale === 'fr' ? 'Mensualité estimée' : 'Estimated monthly payment'}</span>
+                      <span className="font-semibold text-navy-900">{estimatedMonthly.toLocaleString(undefined, { maximumFractionDigits: 2 })} TND</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-navy-600">{locale === 'ar' ? 'رسوم إدارية للمنصة' : locale === 'fr' ? 'Frais administratifs de plateforme' : 'Administrative platform fee'}</span>
+                      <span className="font-semibold text-navy-900">{PLATFORM_FEE_TND} TND{locale === 'ar' ? '/شهريًا' : '/mo'}</span>
+                    </div>
+                    <div className="border-t border-navy-100 pt-2 flex justify-between text-sm">
+                      <span className="text-navy-800 font-semibold">{locale === 'ar' ? 'الإجمالي الشهري المقدر' : locale === 'fr' ? 'Total mensuel estimé' : 'Total estimated monthly amount'}</span>
+                      <span className="font-bold text-navy-900">{total.toLocaleString(undefined, { maximumFractionDigits: 2 })} TND</span>
+                    </div>
+                  </div>
+                )
+              })()}
+
+              <label className={clsx('flex items-start gap-2.5 p-3 rounded-xl border-2 cursor-pointer transition-all',
+                data.platformFeeAcknowledged ? 'border-teal-500 bg-teal-50/50' : 'border-gray-200')}>
+                <input type="checkbox" className="mt-0.5" checked={data.platformFeeAcknowledged}
+                  onChange={e => { setData(d => ({ ...d, platformFeeAcknowledged: e.target.checked })); if (errors.platformFeeAcknowledged) setErrors(p => { const n = { ...p }; delete n.platformFeeAcknowledged; return n }) }} />
+                <span className="text-sm text-gray-700">
+                  {locale === 'ar' ? 'أفهم أن FORSA تفرض رسومًا إدارية للمنصة قدرها 30 دينارًا تونسيًا شهريًا.'
+                    : locale === 'fr' ? 'Je comprends que FORSA facture 30 TND/mois de frais administratifs de plateforme.'
+                    : 'I understand that FORSA charges 30 TND/month as an administrative platform fee.'}
+                </span>
+              </label>
+              {errors.platformFeeAcknowledged && <p className="text-xs text-red-500 mt-1">{errors.platformFeeAcknowledged}</p>}
+            </Card>
+          )}
+
+          {/* Phase 14 — optional analytics-only question, never used in
+              scoring or decisioning. */}
+          <Card>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+              {locale === 'ar' ? 'لماذا تختار FORSA؟ (اختياري)' : locale === 'fr' ? 'Pourquoi choisissez-vous FORSA ? (facultatif)' : 'Why are you choosing FORSA? (optional)'}
+            </p>
+            <div className="space-y-2">
+              {WHY_FORSA_OPTIONS.map(opt => (
+                <button key={opt.value} type="button"
+                  onClick={() => setData(d => ({ ...d, forsaChoiceReason: d.forsaChoiceReason === opt.value ? '' : opt.value }))}
+                  className={clsx('w-full text-start px-3 py-2.5 rounded-xl border-2 text-sm transition-all',
+                    data.forsaChoiceReason === opt.value ? 'border-navy-800 bg-navy-800 text-white' : 'border-gray-200 text-gray-600 hover:border-gray-300')}>
+                  {opt.label[locale] || opt.label.en}
+                </button>
+              ))}
             </div>
           </Card>
 
@@ -399,67 +484,15 @@ export default function ApplyPage() {
         </div>
       )}
 
-      {/* ── Phase 3: Documents (workflow alignment fix) ──────────────────
-          Every one of these is a hard requirement of the admin pipeline's
-          Stage 1 Completeness Gate — collected here instead of never, so
-          the application this wizard produces can actually pass it. */}
-      {phase === 3 && (
-        <div className="space-y-5">
-          <Card>
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
-              {locale === 'ar' ? 'الوثائق المطلوبة' : locale === 'fr' ? 'Documents requis' : 'Required Documents'}
-            </p>
-            <p className="text-xs text-gray-400 mb-4">
-              {locale === 'ar' ? 'مطلوبة لمراجعة طلبك. الصيغ المقبولة: PDF، JPG، PNG.' : locale === 'fr' ? 'Nécessaires pour l\'examen de votre demande. Formats acceptés : PDF, JPG, PNG.' : 'Required for your request to be reviewed. Accepted formats: PDF, JPG, PNG.'}
-            </p>
-            <div className="space-y-3">
-              {REQUIRED_DOCUMENT_TYPES.map(doc => {
-                const uploaded = data.documentIds[doc.code]
-                const isUploading = uploading === doc.code
-                return (
-                  <div key={doc.code} className={clsx(
-                    'flex items-center justify-between p-3 rounded-xl border-2',
-                    uploaded ? 'border-teal-200 bg-teal-50/50' : 'border-gray-200'
-                  )}>
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      {uploaded
-                        ? <CheckCircle size={18} className="text-teal-600 flex-shrink-0" />
-                        : <Upload size={18} className="text-gray-400 flex-shrink-0" />}
-                      <span className="text-sm font-medium text-gray-800 truncate">{doc.label[locale] || doc.label.en}</span>
-                    </div>
-                    <label className={clsx(
-                      'text-xs font-semibold px-3 py-1.5 rounded-lg cursor-pointer flex-shrink-0',
-                      uploaded ? 'bg-white text-teal-700 border border-teal-200' : 'bg-navy-800 text-white'
-                    )}>
-                      {isUploading ? <Loader2 size={13} className="animate-spin" /> : uploaded
-                        ? (locale === 'ar' ? 'استبدال' : locale === 'fr' ? 'Remplacer' : 'Replace')
-                        : (locale === 'ar' ? 'رفع' : locale === 'fr' ? 'Téléverser' : 'Upload')}
-                      <input type="file" className="hidden" accept="application/pdf,image/jpeg,image/png,image/webp"
-                        disabled={isUploading}
-                        onChange={e => { const f = e.target.files?.[0]; if (f) handleDocumentUpload(doc.code, f) }} />
-                    </label>
-                  </div>
-                )
-              })}
-            </div>
-          </Card>
-
-          <div className="flex gap-3">
-            <button onClick={() => setPhase(2)} className="btn-secondary flex-1 py-3">
-              <ChevronLeft size={16} /> {locale === 'ar' ? 'رجوع' : locale === 'fr' ? 'Retour' : 'Back'}
-            </button>
-            <button onClick={handleNext} className="btn-primary flex-1 py-3">
-              {locale === 'ar' ? 'التالي' : locale === 'fr' ? 'Suivant' : 'Next'} <ChevronRight size={16} />
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* ── Phase 4: Guarantor details (workflow alignment fix) ──────────
+      {/* ── Phase 3: Guarantor details (workflow alignment fix) ──────────
           Collected as part of the application itself now, not a separate
           pre/post-application action — the invitation is sent only after
-          the application is actually created (see InterviewPage.tsx). */}
-      {phase === 4 && (
+          the application is actually created (see InterviewPage.tsx).
+          Phase 14 — the guarantor remains part of the same Case File;
+          they'll complete their own Financial Responsibility Profile
+          after accepting the invitation, and their meeting paperwork
+          (CIN, income proof, كمبيالة) is verified in person. */}
+      {phase === 3 && (
         <div className="space-y-5">
           <Card>
             <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
@@ -488,7 +521,7 @@ export default function ApplyPage() {
           </Card>
 
           <div className="flex gap-3">
-            <button onClick={() => setPhase(3)} className="btn-secondary flex-1 py-3">
+            <button onClick={() => setPhase(2)} className="btn-secondary flex-1 py-3">
               <ChevronLeft size={16} /> {locale === 'ar' ? 'رجوع' : locale === 'fr' ? 'Retour' : 'Back'}
             </button>
             <button onClick={handleNext} className="btn-primary flex-1 py-3">

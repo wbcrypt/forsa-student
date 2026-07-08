@@ -21,13 +21,14 @@ interface ApplyData {
   firstName: string; lastName: string; dateOfBirth: string
   phone: string; email: string; city: string; nationality: string
   universityId: string; universityName: string
-  programId: string; program: string; yearOfStudy: string; tuitionAmount: string
+  programId: string; program: string; yearOfStudy: string; programTuition: number | null
   isCurrentStudent: string; preferredLanguage: Locale
+  // Phase 14 — student-requested plan and the required fee acknowledgment.
+  requestedTier: string; platformFeeAcknowledged: boolean; forsaChoiceReason: string
   paymentResponsible: string; householdIncome: string
   hasGuarantor: string; employmentStatus: string
   consentsAt: string
   guarantorFirstName: string; guarantorLastName: string; guarantorEmail: string; guarantorRelationship: string
-  documentIds: Record<string, string>
 }
 
 // ─── System prompt ───────────────────────────────────────────────────────────
@@ -36,7 +37,7 @@ function buildSystemPrompt(data: ApplyData, lang: Locale): string {
   return `You are FORSA's AI readiness interviewer. Warm, professional, genuinely curious.
 Conduct the ENTIRE interview in ${langName}. Ask ONE question at a time. Be conversational.
 Student: ${data.firstName} ${data.lastName} | University: ${data.universityName} | Program: ${data.program}
-Tuition: ${data.tuitionAmount} TND | Payment by: ${data.paymentResponsible} | Guarantor: ${data.hasGuarantor}
+Tuition: ${data.programTuition} TND | Requested plan: ${data.requestedTier} | Payment by: ${data.paymentResponsible} | Guarantor: ${data.hasGuarantor}
 Income: ${data.householdIncome} | Employment: ${data.employmentStatus}
 Cover 4 pillars naturally: Educational Readiness, Financial Readiness, Planning Readiness, Commitment Readiness.
 After 8 exchanges, wrap up warmly. NEVER say approved/rejected/bronze. You do NOT make decisions. You evaluate readiness only.`
@@ -55,7 +56,7 @@ After 8 exchanges, wrap up warmly. NEVER say approved/rejected/bronze. You do NO
 function buildScoringPrompt(data: ApplyData, messages: Message[], lang: Locale): string {
   const transcript = messages.map(m => `${m.role === 'user' ? 'Student' : 'AI'}: ${m.content}`).join('\n\n')
   return `You are a FORSA analyst. Review this ${lang} interview and return ONLY valid JSON:
-Student: ${data.firstName} ${data.lastName} | ${data.universityName} | ${data.program} | ${data.tuitionAmount} TND
+Student: ${data.firstName} ${data.lastName} | ${data.universityName} | ${data.program} | ${data.programTuition} TND
 TRANSCRIPT:\n${transcript}
 Score each dimension 0-100 based on the interview and the student's stated situation:
 - householdStability: family/guarantor situation stability, housing, dependents
@@ -250,10 +251,14 @@ export default function InterviewPage() {
         await applicationApi.create({
           universityId: studentData.universityId || undefined,
           programId: studentData.programId || undefined,
-          tuitionAmount: parseFloat(studentData.tuitionAmount) || 0,
-          requestedSupportAmount: parseFloat(studentData.tuitionAmount) || 0,
+          // Phase 14 — tuitionAmount is deliberately not sent: the server
+          // derives it itself from programs.tuition_amount and never
+          // trusts a client-supplied figure for it.
           currency: 'TND',
           academicYear: `${new Date().getFullYear()}-${new Date().getFullYear() + 1}`,
+          requestedTier: studentData.requestedTier || undefined,
+          platformFeeAcknowledged: studentData.platformFeeAcknowledged,
+          forsaChoiceReason: studentData.forsaChoiceReason || undefined,
           // Was studentData.isCurrentStudent === 'yes' — isRenewal means
           // "renewing a previous Tuition Facilitation Plan," a completely
           // different question from "are you currently enrolled." Every
