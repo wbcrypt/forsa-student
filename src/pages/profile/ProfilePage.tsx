@@ -1,22 +1,66 @@
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAuth } from '../../context/AuthContext'
 import { useLocale } from '../../hooks/useLocale'
 import { studentApi } from '../../lib/api'
-import { Card, Spinner, Alert } from '../../components/ui'
+import { Card, Spinner, Alert, FormField } from '../../components/ui'
 import { LOCALES, Locale } from '../../lib/i18n'
-import { User, Globe, Shield, LogOut, ChevronRight } from 'lucide-react'
-import { useState } from 'react'
+import { User, Globe, Shield, LogOut, ChevronRight, Pencil } from 'lucide-react'
+import { useState, useEffect } from 'react'
 import clsx from 'clsx'
+
+const ACADEMIC_LEVELS = [
+  { value: '', label: '—' },
+  { value: 'terminale', label: 'Terminale (Bac)' },
+  { value: 'licence_1', label: 'Licence 1' },
+  { value: 'licence_2', label: 'Licence 2' },
+  { value: 'licence_3', label: 'Licence 3' },
+  { value: 'master_1', label: 'Master 1' },
+  { value: 'master_2', label: 'Master 2' },
+  { value: 'ingenieur', label: 'Ingénieur' },
+  { value: 'doctorat', label: 'Doctorat' },
+]
+
+const NATIONALITIES = [
+  { value: '', label: '—' },
+  { value: 'TN', label: 'Tunisian' },
+  { value: 'FR', label: 'French' },
+  { value: 'DZ', label: 'Algerian' },
+  { value: 'MA', label: 'Moroccan' },
+  { value: 'LY', label: 'Libyan' },
+]
 
 export default function ProfilePage() {
   const { user, logout } = useAuth()
   const { t, locale, changeLocale } = useLocale()
+  const qc = useQueryClient()
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
+  const [editing, setEditing] = useState(false)
+  const [form, setForm] = useState({ phonePrimary: '', city: '', nationality: '', dateOfBirth: '', academicLevel: '' })
 
   const { data: student, isLoading } = useQuery({
     queryKey: ['student-me', user?.id],
     queryFn: () => studentApi.getMe().then(r => r.data),
     enabled: !!user?.id,
+  })
+
+  useEffect(() => {
+    if (student) {
+      setForm({
+        phonePrimary: student.phone_primary || '',
+        city: student.city || '',
+        nationality: student.nationality?.trim() || '',
+        dateOfBirth: student.date_of_birth ? student.date_of_birth.slice(0, 10) : '',
+        academicLevel: student.academic_level || '',
+      })
+    }
+  }, [student])
+
+  const updateMutation = useMutation({
+    mutationFn: () => studentApi.updateMe(form),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['student-me'] })
+      setEditing(false)
+    },
   })
 
   if (isLoading) return <Spinner className="h-64" />
@@ -43,26 +87,75 @@ export default function ProfilePage() {
 
       {/* Personal info */}
       <Card>
-        <div className="flex items-center gap-2 mb-4">
-          <User size={16} className="text-navy-700" />
-          <p className="text-sm font-semibold text-gray-900">{t('personalInfo')}</p>
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <User size={16} className="text-navy-700" />
+            <p className="text-sm font-semibold text-gray-900">{t('personalInfo')}</p>
+          </div>
+          {!editing && (
+            <button onClick={() => setEditing(true)} className="text-xs font-semibold text-navy-700 flex items-center gap-1">
+              <Pencil size={12} /> Edit
+            </button>
+          )}
         </div>
-        <div className="space-y-3">
-          {[
-            { label: t('firstName'), value: student?.first_name || '—' },
-            { label: t('lastName'), value: student?.last_name || '—' },
-            { label: t('emailAddress'), value: student?.email || user?.email || '—' },
-            { label: t('phone'), value: student?.phone_primary || '—' },
-            { label: 'City', value: student?.city || '—' },
-            { label: 'Nationality', value: student?.nationality || '—' },
-            { label: 'Academic Level', value: student?.academic_level?.replace(/_/g, ' ') || '—' },
-          ].map(item => (
-            <div key={item.label} className="flex items-center justify-between py-1.5 border-b border-gray-50 last:border-0">
-              <span className="text-sm text-gray-500">{item.label}</span>
-              <span className="text-sm font-medium text-gray-900 capitalize">{item.value}</span>
+
+        {!editing ? (
+          <div className="space-y-3">
+            {[
+              { label: t('firstName'), value: student?.first_name || '—' },
+              { label: t('lastName'), value: student?.last_name || '—' },
+              { label: t('emailAddress'), value: student?.email || user?.email || '—' },
+              { label: t('phone'), value: student?.phone_primary || '—' },
+              { label: 'City', value: student?.city || '—' },
+              { label: 'Nationality', value: NATIONALITIES.find(n => n.value === student?.nationality?.trim())?.label || student?.nationality || '—' },
+              { label: 'Academic Level', value: ACADEMIC_LEVELS.find(l => l.value === student?.academic_level)?.label || '—' },
+            ].map(item => (
+              <div key={item.label} className="flex items-center justify-between py-1.5 border-b border-gray-50 last:border-0">
+                <span className="text-sm text-gray-500">{item.label}</span>
+                <span className="text-sm font-medium text-gray-900 capitalize">{item.value}</span>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {updateMutation.isError && (
+              <Alert type="error" message="Failed to save. Please try again." />
+            )}
+            <FormField label={t('phone')}>
+              <input className="input" value={form.phonePrimary}
+                onChange={e => setForm(f => ({ ...f, phonePrimary: e.target.value }))} />
+            </FormField>
+            <FormField label="City">
+              <input className="input" value={form.city}
+                onChange={e => setForm(f => ({ ...f, city: e.target.value }))} />
+            </FormField>
+            <FormField label="Nationality">
+              <select className="input" value={form.nationality}
+                onChange={e => setForm(f => ({ ...f, nationality: e.target.value }))}>
+                {NATIONALITIES.map(n => <option key={n.value} value={n.value}>{n.label}</option>)}
+              </select>
+            </FormField>
+            <FormField label="Date of Birth">
+              <input type="date" className="input" value={form.dateOfBirth}
+                onChange={e => setForm(f => ({ ...f, dateOfBirth: e.target.value }))} />
+            </FormField>
+            <FormField label="Academic Level">
+              <select className="input" value={form.academicLevel}
+                onChange={e => setForm(f => ({ ...f, academicLevel: e.target.value }))}>
+                {ACADEMIC_LEVELS.map(l => <option key={l.value} value={l.value}>{l.label}</option>)}
+              </select>
+            </FormField>
+            <div className="flex gap-3 pt-2">
+              <button onClick={() => setEditing(false)} className="btn-secondary flex-1 text-sm py-2">
+                {t('cancel')}
+              </button>
+              <button onClick={() => updateMutation.mutate()} disabled={updateMutation.isPending}
+                className="btn-teal flex-1 text-sm py-2">
+                {updateMutation.isPending ? '...' : t('save')}
+              </button>
             </div>
-          ))}
-        </div>
+          </div>
+        )}
       </Card>
 
       {/* FORSA Score */}

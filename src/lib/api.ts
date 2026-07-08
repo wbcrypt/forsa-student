@@ -91,6 +91,11 @@ export const studentApi = {
   // self-scoped routes, which take no id at all (resolved server-side
   // from the JWT identity).
   getMe: () => api.get('/students/me'),
+  // Discovered during manual pilot testing — there was no way for a
+  // student to actually edit their own profile; the Dashboard's "Complete
+  // Profile" checklist item led to a read-only page.
+  updateMe: (data: { phonePrimary?: string; city?: string; nationality?: string; dateOfBirth?: string; academicLevel?: string }) =>
+    api.patch('/students/me', data),
   update: (id: string, data: unknown) => api.patch(`/students/${id}`, data),
   getScore: (id: string) => api.get(`/scores/students/${id}`),
   getApplications: () => api.get('/students/me/applications'),
