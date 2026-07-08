@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useLocale } from '../../hooks/useLocale'
 import { LOCALES, Locale } from '../../lib/i18n'
-import { Mail, Phone, ArrowLeft } from 'lucide-react'
+import { Mail, ArrowLeft } from 'lucide-react'
 
 // T-101 cleanup: the "Forgot password?" link on LoginPage used to point at this
 // route with nothing behind it (App.tsx had no matching <Route>, so it silently
@@ -58,19 +58,6 @@ export default function ForgotPasswordPage() {
                 <p className="text-sm font-medium text-gray-900">support@forsa.tn</p>
                 <p className="text-xs text-gray-400">
                   {locale === 'ar' ? 'البريد الإلكتروني للدعم' : locale === 'fr' ? 'E-mail du support' : 'Support email'}
-                </p>
-              </div>
-            </a>
-
-            <a href="tel:+216XXXXXXXX"
-              className="flex items-center gap-3 p-3 rounded-xl border border-gray-100 hover:border-navy-200 hover:bg-navy-50/50 transition-colors">
-              <div className="w-9 h-9 rounded-xl bg-navy-50 text-navy-700 flex items-center justify-center flex-shrink-0">
-                <Phone size={16} />
-              </div>
-              <div>
-                <p className="text-sm font-medium text-gray-900">+216 XX XXX XXX</p>
-                <p className="text-xs text-gray-400">
-                  {locale === 'ar' ? 'خط الدعم' : locale === 'fr' ? "Ligne d'assistance" : 'Support line'}
                 </p>
               </div>
             </a>

@@ -251,7 +251,14 @@ export default function InterviewPage() {
           requestedSupportAmount: parseFloat(studentData.tuitionAmount) || 0,
           currency: 'TND',
           academicYear: `${new Date().getFullYear()}-${new Date().getFullYear() + 1}`,
-          isRenewal: studentData.isCurrentStudent === 'yes',
+          // Was studentData.isCurrentStudent === 'yes' — isRenewal means
+          // "renewing a previous Tuition Facilitation Plan," a completely
+          // different question from "are you currently enrolled." Every
+          // current-student applicant was being mislabeled as a renewal.
+          // No renewal-tracking UI exists yet (the applicant doesn't pick
+          // a previous application to renew), so this is always false for
+          // now rather than guessing from an unrelated field.
+          isRenewal: false,
           interviewLanguage: lang,
           interviewTranscript: transcript,
           aiReport: JSON.stringify({ ...aiReport, demo_mode: wasDemo }),
@@ -267,6 +274,14 @@ export default function InterviewPage() {
         if (err?.response?.status === 403) {
           setSubmissionError(err.response?.data?.message ||
             'You need an active FORSA membership before submitting a tuition facilitation plan request.')
+          setPhase('error')
+          return
+        }
+        if (err?.response?.status === 400 && err.response?.data?.message) {
+          // Duplicate-request block, validation errors, etc. — the backend
+          // message is already specific; the generic fallback below wrongly
+          // implies something broke and support needs contacting.
+          setSubmissionError(err.response.data.message)
           setPhase('error')
           return
         }

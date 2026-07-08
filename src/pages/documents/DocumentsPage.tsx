@@ -233,7 +233,6 @@ export default function DocumentsPage() {
             </div>
             <div className="space-y-2">
               {[
-                { icon: Phone, value: '+216 XX XXX XXX', label: locale === 'ar' ? 'هاتف' : locale === 'fr' ? 'Téléphone' : 'Phone' },
                 { icon: Mail, value: 'activation@forsa.tn', label: 'Email' },
                 { icon: MapPin, value: locale === 'ar' ? 'تونس العاصمة، شارع الحبيب بورقيبة' : 'Tunis, Avenue Habib Bourguiba', label: locale === 'ar' ? 'العنوان' : locale === 'fr' ? 'Adresse' : 'Address' },
               ].map(contact => {

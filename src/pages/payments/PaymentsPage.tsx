@@ -488,9 +488,9 @@ export default function PaymentsPage() {
           {locale === 'ar' ? 'هل تحتاج مساعدة في الدفع؟' : locale === 'fr' ? "Besoin d'aide pour payer ?" : 'Need help with payments?'}
         </p>
         <p className="text-xs text-navy-600">
-          {locale === 'ar' ? 'تواصل مع فريق FORSA: payments@forsa.tn | +216 XX XXX XXX'
-            : locale === 'fr' ? "Contactez l'équipe FORSA : payments@forsa.tn | +216 XX XXX XXX"
-            : 'Contact FORSA team: payments@forsa.tn | +216 XX XXX XXX'}
+          {locale === 'ar' ? 'تواصل مع فريق FORSA: payments@forsa.tn'
+            : locale === 'fr' ? "Contactez l'équipe FORSA : payments@forsa.tn"
+            : 'Contact FORSA team: payments@forsa.tn'}
         </p>
       </Card>
     </div>
