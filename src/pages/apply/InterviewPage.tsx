@@ -5,7 +5,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useLocale } from '../../hooks/useLocale'
 import type { Locale } from '../../lib/i18n'
-import { applicationApi } from '../../lib/api'
+import { applicationApi, studentApi } from '../../lib/api'
 import api from '../../lib/api'
 import { Alert } from '../../components/ui'
 import { Send, Loader2, CheckCircle, AlertTriangle } from 'lucide-react'
@@ -26,6 +26,8 @@ interface ApplyData {
   paymentResponsible: string; householdIncome: string
   hasGuarantor: string; employmentStatus: string
   consentsAt: string
+  guarantorFirstName: string; guarantorLastName: string; guarantorEmail: string; guarantorRelationship: string
+  documentIds: Record<string, string>
 }
 
 // ─── System prompt ───────────────────────────────────────────────────────────
@@ -131,6 +133,7 @@ export default function InterviewPage() {
   const [phase, setPhase] = useState<'interview' | 'completing' | 'done' | 'error'>('interview')
   const [error, setError] = useState('')
   const [submissionError, setSubmissionError] = useState('')
+  const [guarantorWarning, setGuarantorWarning] = useState('')
   const [isDemo, setIsDemo] = useState(false)
   const [turnCount, setTurnCount] = useState(0)
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -290,6 +293,26 @@ export default function InterviewPage() {
         return
       }
 
+      // Workflow alignment fix — requirement 3: "Guarantor invitation
+      // should be triggered only after the Tuition Facilitation
+      // application is created/submitted." The application above is now
+      // real, so it's safe to send the invite. If this specific call
+      // fails, the application itself is NOT rolled back (it already
+      // exists and is valid) — surfaced as a warning on the done screen
+      // instead, with a pointer to /guarantor where the invite can be
+      // sent again.
+      try {
+        await studentApi.addGuarantor({
+          firstName: studentData.guarantorFirstName,
+          lastName: studentData.guarantorLastName,
+          email: studentData.guarantorEmail,
+          relationship: studentData.guarantorRelationship || undefined,
+        })
+      } catch (err: any) {
+        setGuarantorWarning(err?.response?.data?.message ||
+          'Your application was submitted, but the guarantor invitation could not be sent. You can send it from the Guarantor page.')
+      }
+
       sessionStorage.removeItem('forsa_apply_data')
       setPhase('done')
     } catch {
@@ -369,6 +392,11 @@ export default function InterviewPage() {
       <div className="bg-navy-50 border border-navy-100 rounded-2xl p-4 text-sm text-navy-700 max-w-sm leading-relaxed">
         {l('doneNotice')}
       </div>
+      {guarantorWarning && (
+        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 text-sm text-amber-700 max-w-sm leading-relaxed">
+          {guarantorWarning}
+        </div>
+      )}
       <button onClick={() => navigate('/')} className="btn-teal py-3 px-8">{l('goHome')}</button>
     </div>
   )

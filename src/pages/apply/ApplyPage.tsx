@@ -6,16 +6,16 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { useLocale } from '../../hooks/useLocale'
 import { LOCALES, Locale } from '../../lib/i18n'
-import { universityApi } from '../../lib/api'
+import { universityApi, documentApi, uploadFileToS3 } from '../../lib/api'
 import { useQuery } from '@tanstack/react-query'
 import { Alert, Card, FormField, Spinner, StepProgress } from '../../components/ui'
-import { ChevronRight, ChevronLeft, Loader2 } from 'lucide-react'
+import { ChevronRight, ChevronLeft, Loader2, CheckCircle, Upload } from 'lucide-react'
 import clsx from 'clsx'
 
 const STEPS_LABELS: Record<Locale, string[]> = {
-  en: ['Your Profile', 'Legal Consent', 'AI Interview'],
-  fr: ['Votre profil', 'Consentement', 'Entretien IA'],
-  ar: ['ملفك', 'الموافقة', 'المقابلة'],
+  en: ['Your Profile', 'Financial', 'Documents', 'Guarantor', 'Legal Consent', 'AI Interview'],
+  fr: ['Votre profil', 'Situation financière', 'Documents', 'Garant', 'Consentement', 'Entretien IA'],
+  ar: ['ملفك', 'الوضع المالي', 'الوثائق', 'الضامن', 'الموافقة', 'المقابلة'],
 }
 
 interface Phase1Data {
@@ -40,6 +40,16 @@ interface Phase1Data {
   paymentResponsible: string; householdIncome: string
   hasGuarantor: 'yes' | 'no' | ''
   employmentStatus: string
+  // Workflow alignment fix (manual pilot testing) — the admin pipeline's
+  // Stage 1 Completeness Gate has always required a guarantor on file and
+  // 4 specific documents (national_id, bac_diploma, university_acceptance,
+  // income_proof), but nothing in this wizard ever collected them, so
+  // every self-submitted application was created guaranteed to fail the
+  // very first pipeline stage. Guarantor details and document uploads are
+  // now mandatory wizard steps instead of happening — or not — separately
+  // after the fact.
+  guarantorFirstName: string; guarantorLastName: string; guarantorEmail: string; guarantorRelationship: string
+  documentIds: Record<string, string>
 }
 
 const EMPTY: Phase1Data = {
@@ -47,16 +57,26 @@ const EMPTY: Phase1Data = {
   universityId: '', universityName: '', programId: '', program: '', yearOfStudy: '', tuitionAmount: '', isCurrentStudent: '',
   preferredLanguage: 'fr',
   paymentResponsible: '', householdIncome: '', hasGuarantor: '', employmentStatus: '',
+  guarantorFirstName: '', guarantorLastName: '', guarantorEmail: '', guarantorRelationship: '',
+  documentIds: {},
 }
+
+const REQUIRED_DOCUMENT_TYPES: { code: string; label: Record<Locale, string> }[] = [
+  { code: 'national_id', label: { en: 'National ID Card', fr: "Carte d'identité nationale", ar: 'بطاقة الهوية الوطنية' } },
+  { code: 'bac_diploma', label: { en: 'Bac Diploma', fr: 'Diplôme du Bac', ar: 'شهادة الباكالوريا' } },
+  { code: 'university_acceptance', label: { en: 'University Acceptance Letter', fr: "Lettre d'admission universitaire", ar: 'رسالة قبول الجامعة' } },
+  { code: 'income_proof', label: { en: 'Income Proof', fr: 'Justificatif de revenus', ar: 'إثبات الدخل' } },
+]
 
 export default function ApplyPage() {
   const { user } = useAuth()
   const { t, locale, changeLocale } = useLocale()
   const navigate = useNavigate()
-  const [phase, setPhase] = useState<1 | 2 | 3>(1)
+  const [phase, setPhase] = useState<1 | 2 | 3 | 4 | 5>(1)
   const [data, setData] = useState<Phase1Data>({ ...EMPTY, preferredLanguage: locale })
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [serverError, setServerError] = useState('')
+  const [uploading, setUploading] = useState<string | null>(null)
 
   const { data: unisData } = useQuery({
     queryKey: ['unis-for-apply'],
@@ -99,6 +119,46 @@ export default function ApplyPage() {
     return Object.keys(e).length === 0
   }
 
+  // Workflow alignment fix — the student must not be able to reach
+  // submission with a required document missing (requirement 2). Checked
+  // client-side here for immediate feedback; createForSelf enforces the
+  // same requirement server-side regardless, so this can never be
+  // bypassed by skipping straight to the interview route.
+  const validateDocuments = (): boolean => {
+    const missing = REQUIRED_DOCUMENT_TYPES.filter(d => !data.documentIds[d.code])
+    if (missing.length) {
+      setServerError(locale === 'ar' ? 'يرجى رفع جميع الوثائق المطلوبة' : locale === 'fr' ? 'Veuillez téléverser tous les documents requis' : 'Please upload all required documents')
+      return false
+    }
+    return true
+  }
+
+  const validateGuarantor = (): boolean => {
+    const e: Record<string, string> = {}
+    if (!data.guarantorFirstName.trim()) e.guarantorFirstName = 'Required'
+    if (!data.guarantorLastName.trim()) e.guarantorLastName = 'Required'
+    if (!data.guarantorEmail.trim() || !data.guarantorEmail.includes('@')) e.guarantorEmail = 'Enter a valid email'
+    setErrors(e)
+    return Object.keys(e).length === 0
+  }
+
+  const handleDocumentUpload = async (documentTypeCode: string, file: File) => {
+    setUploading(documentTypeCode)
+    setServerError('')
+    try {
+      const { data: uploadInfo } = await documentApi.getUploadUrl({
+        documentTypeCode, fileName: file.name, contentType: file.type,
+      })
+      await uploadFileToS3(uploadInfo.uploadUrl, file)
+      await documentApi.confirmUpload(uploadInfo.documentId, file.size)
+      setData(d => ({ ...d, documentIds: { ...d.documentIds, [documentTypeCode]: uploadInfo.documentId } }))
+    } catch (err: any) {
+      setServerError(err?.response?.data?.message || (locale === 'ar' ? 'فشل الرفع. حاول مرة أخرى.' : locale === 'fr' ? 'Échec du téléversement. Réessayez.' : 'Upload failed. Please try again.'))
+    } finally {
+      setUploading(null)
+    }
+  }
+
   const handleNext = () => {
     setServerError('')
     if (phase === 1 && validate1()) {
@@ -109,11 +169,17 @@ export default function ApplyPage() {
     } else if (phase === 2 && validate2()) {
       setPhase(3)
       window.scrollTo({ top: 0, behavior: 'smooth' })
+    } else if (phase === 3 && validateDocuments()) {
+      setPhase(4)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    } else if (phase === 4 && validateGuarantor()) {
+      setPhase(5)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
     }
   }
 
-  if (phase === 3) {
-    return <ConsentGate data={data} onBack={() => setPhase(2)} />
+  if (phase === 5) {
+    return <ConsentGate data={data} onBack={() => setPhase(4)} />
   }
 
   const steps = STEPS_LABELS[locale] || STEPS_LABELS.en
@@ -324,6 +390,105 @@ export default function ApplyPage() {
 
           <div className="flex gap-3">
             <button onClick={() => setPhase(1)} className="btn-secondary flex-1 py-3">
+              <ChevronLeft size={16} /> {locale === 'ar' ? 'رجوع' : locale === 'fr' ? 'Retour' : 'Back'}
+            </button>
+            <button onClick={handleNext} className="btn-primary flex-1 py-3">
+              {locale === 'ar' ? 'التالي' : locale === 'fr' ? 'Suivant' : 'Next'} <ChevronRight size={16} />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ── Phase 3: Documents (workflow alignment fix) ──────────────────
+          Every one of these is a hard requirement of the admin pipeline's
+          Stage 1 Completeness Gate — collected here instead of never, so
+          the application this wizard produces can actually pass it. */}
+      {phase === 3 && (
+        <div className="space-y-5">
+          <Card>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
+              {locale === 'ar' ? 'الوثائق المطلوبة' : locale === 'fr' ? 'Documents requis' : 'Required Documents'}
+            </p>
+            <p className="text-xs text-gray-400 mb-4">
+              {locale === 'ar' ? 'مطلوبة لمراجعة طلبك. الصيغ المقبولة: PDF، JPG، PNG.' : locale === 'fr' ? 'Nécessaires pour l\'examen de votre demande. Formats acceptés : PDF, JPG, PNG.' : 'Required for your request to be reviewed. Accepted formats: PDF, JPG, PNG.'}
+            </p>
+            <div className="space-y-3">
+              {REQUIRED_DOCUMENT_TYPES.map(doc => {
+                const uploaded = data.documentIds[doc.code]
+                const isUploading = uploading === doc.code
+                return (
+                  <div key={doc.code} className={clsx(
+                    'flex items-center justify-between p-3 rounded-xl border-2',
+                    uploaded ? 'border-teal-200 bg-teal-50/50' : 'border-gray-200'
+                  )}>
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      {uploaded
+                        ? <CheckCircle size={18} className="text-teal-600 flex-shrink-0" />
+                        : <Upload size={18} className="text-gray-400 flex-shrink-0" />}
+                      <span className="text-sm font-medium text-gray-800 truncate">{doc.label[locale] || doc.label.en}</span>
+                    </div>
+                    <label className={clsx(
+                      'text-xs font-semibold px-3 py-1.5 rounded-lg cursor-pointer flex-shrink-0',
+                      uploaded ? 'bg-white text-teal-700 border border-teal-200' : 'bg-navy-800 text-white'
+                    )}>
+                      {isUploading ? <Loader2 size={13} className="animate-spin" /> : uploaded
+                        ? (locale === 'ar' ? 'استبدال' : locale === 'fr' ? 'Remplacer' : 'Replace')
+                        : (locale === 'ar' ? 'رفع' : locale === 'fr' ? 'Téléverser' : 'Upload')}
+                      <input type="file" className="hidden" accept="application/pdf,image/jpeg,image/png,image/webp"
+                        disabled={isUploading}
+                        onChange={e => { const f = e.target.files?.[0]; if (f) handleDocumentUpload(doc.code, f) }} />
+                    </label>
+                  </div>
+                )
+              })}
+            </div>
+          </Card>
+
+          <div className="flex gap-3">
+            <button onClick={() => setPhase(2)} className="btn-secondary flex-1 py-3">
+              <ChevronLeft size={16} /> {locale === 'ar' ? 'رجوع' : locale === 'fr' ? 'Retour' : 'Back'}
+            </button>
+            <button onClick={handleNext} className="btn-primary flex-1 py-3">
+              {locale === 'ar' ? 'التالي' : locale === 'fr' ? 'Suivant' : 'Next'} <ChevronRight size={16} />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ── Phase 4: Guarantor details (workflow alignment fix) ──────────
+          Collected as part of the application itself now, not a separate
+          pre/post-application action — the invitation is sent only after
+          the application is actually created (see InterviewPage.tsx). */}
+      {phase === 4 && (
+        <div className="space-y-5">
+          <Card>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
+              {locale === 'ar' ? 'تفاصيل الضامن' : locale === 'fr' ? 'Détails du garant' : 'Guarantor Details'}
+            </p>
+            <p className="text-xs text-gray-400 mb-4">
+              {locale === 'ar' ? 'الشخص الذي سيدعم خطة تيسير المعاليم الخاصة بك. سيتلقى دعوة آمنة بمجرد تقديم طلبك.' : locale === 'fr' ? "La personne qui soutiendra votre plan de facilitation. Elle recevra une invitation sécurisée dès la soumission de votre demande." : 'The person who will back your Tuition Facilitation Plan. They will receive a secure invitation as soon as your request is submitted.'}
+            </p>
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-3">
+                <FormField label={locale === 'ar' ? 'الاسم الأول' : locale === 'fr' ? 'Prénom' : 'First name'} required error={errors.guarantorFirstName}>
+                  <input className="input" value={data.guarantorFirstName} onChange={set('guarantorFirstName')} />
+                </FormField>
+                <FormField label={locale === 'ar' ? 'اسم العائلة' : locale === 'fr' ? 'Nom' : 'Last name'} required error={errors.guarantorLastName}>
+                  <input className="input" value={data.guarantorLastName} onChange={set('guarantorLastName')} />
+                </FormField>
+              </div>
+              <FormField label={locale === 'ar' ? 'البريد الإلكتروني' : locale === 'fr' ? 'E-mail' : 'Email'} required error={errors.guarantorEmail}>
+                <input type="email" className="input" value={data.guarantorEmail} onChange={set('guarantorEmail')} />
+              </FormField>
+              <FormField label={locale === 'ar' ? 'صلة القرابة' : locale === 'fr' ? 'Lien de parenté' : 'Relationship'}>
+                <input className="input" value={data.guarantorRelationship} onChange={set('guarantorRelationship')}
+                  placeholder={locale === 'ar' ? 'مثال: الأب، الأم' : locale === 'fr' ? 'ex: Parent' : 'e.g. Parent'} />
+              </FormField>
+            </div>
+          </Card>
+
+          <div className="flex gap-3">
+            <button onClick={() => setPhase(3)} className="btn-secondary flex-1 py-3">
               <ChevronLeft size={16} /> {locale === 'ar' ? 'رجوع' : locale === 'fr' ? 'Retour' : 'Back'}
             </button>
             <button onClick={handleNext} className="btn-primary flex-1 py-3">
