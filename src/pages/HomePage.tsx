@@ -6,7 +6,7 @@ import { studentApi, paymentApi } from '../lib/api'
 import { Card, SkeletonCard } from '../components/ui'
 import {
   Award, CreditCard, ArrowRight, CheckCircle, Clock,
-  AlertTriangle, Upload, FileText, Wallet, Sparkles
+  AlertTriangle, Upload, FileText, Wallet, Circle
 } from 'lucide-react'
 import { format } from 'date-fns'
 
@@ -60,8 +60,22 @@ export default function HomePage() {
         <h1 className="text-2xl font-bold text-gray-900">{firstName} 👋</h1>
       </div>
 
-      {/* Next Action — the one thing to do, always first */}
-      <NextActionCard status={status} hasApplication={!!latestApp} schedule={schedule} locale={locale} />
+      {/* Phase 10 — Bronze Dashboard Next Steps. Replaces the old ambiguous
+          "Start your FORSA journey" single card with a real checklist so a
+          first-time student always sees exactly which concrete action is
+          next, never just "apply now" with no context for why. Only shown
+          before an application exists — once one does, the richer
+          FinancingStatusCard/NextActionCard below track the deeper
+          post-submission states (payment due, rejected, waiting list...). */}
+      {!appsLoading && !latestApp && (
+        <OnboardingChecklist student={student} locale={locale} />
+      )}
+
+      {/* Next Action — the one thing to do, always first, once an
+          application exists */}
+      {!!latestApp && (
+        <NextActionCard status={status} hasApplication={!!latestApp} schedule={schedule} locale={locale} />
+      )}
 
       {/* Membership Status / FORSA ID / Digital Pass — all real now
           (T-203/T-204/T-205/T-206). */}
@@ -86,6 +100,8 @@ export default function HomePage() {
 }
 
 // ─── Next Action ────────────────────────────────────────────────────────────
+// Only ever rendered once an application exists (see the pre-application
+// OnboardingChecklist below) — hasApplication is always true here.
 function NextActionCard({ status, hasApplication, schedule, locale }: {
   status: string; hasApplication: boolean; schedule: any; locale: string
 }) {
@@ -95,15 +111,7 @@ function NextActionCard({ status, hasApplication, schedule, locale }: {
   type Action = { icon: any; title: string; desc: string; cta: string; to: string }
   let action: Action
 
-  if (!hasApplication) {
-    action = {
-      icon: Sparkles,
-      title: locale === 'ar' ? 'ابدأ رحلتك مع FORSA' : locale === 'fr' ? 'Commencez votre parcours FORSA' : 'Start your FORSA journey',
-      desc: locale === 'ar' ? 'قدّم طلب خطة تيسير المعاليم الجامعية للبدء.' : locale === 'fr' ? 'Soumettez une demande de plan de facilitation des frais universitaires pour commencer.' : 'Submit a tuition facilitation plan request to get started.',
-      cta: locale === 'ar' ? 'تقدم الآن' : locale === 'fr' ? 'Postuler maintenant' : 'Apply now',
-      to: '/apply',
-    }
-  } else if (['new_lead', 'contacted', 'under_review'].includes(status)) {
+  if (['new_lead', 'contacted', 'under_review'].includes(status)) {
     action = {
       icon: Clock,
       title: locale === 'ar' ? 'طلبك قيد المراجعة' : locale === 'fr' ? 'Votre dossier est en cours de révision' : "We're reviewing your application",
@@ -145,6 +153,14 @@ function NextActionCard({ status, hasApplication, schedule, locale }: {
       cta: locale === 'ar' ? 'عرض المدفوعات' : locale === 'fr' ? 'Voir les paiements' : 'View payments',
       to: '/payments',
     }
+  } else if (status === 'capital_queue') {
+    action = {
+      icon: Clock,
+      title: locale === 'ar' ? 'أنت على قائمة الانتظار' : locale === 'fr' ? "Vous êtes sur liste d'attente" : "You're on the waiting list",
+      desc: locale === 'ar' ? 'لم يتم رفضك — طلبك في الانتظار حتى يتوفر التمويل. عضويتك البرونزية نشطة بالكامل.' : locale === 'fr' ? "Vous n'avez pas été refusé — votre demande attend que des fonds soient disponibles. Votre adhésion Bronze reste pleinement active." : "You haven't been rejected — your request is waiting for funding to become available. Your Bronze membership stays fully active.",
+      cta: locale === 'ar' ? 'عرض التفاصيل' : locale === 'fr' ? 'Voir les détails' : 'View details',
+      to: '/application',
+    }
   } else if (status === 'rejected') {
     action = {
       icon: AlertTriangle,
@@ -184,6 +200,73 @@ function NextActionCard({ status, hasApplication, schedule, locale }: {
         </div>
       </div>
     </Link>
+  )
+}
+
+// ─── Onboarding Checklist (Phase 10) ────────────────────────────────────────
+// Replaces the old single ambiguous "Start your FORSA journey" card. A
+// first-time Bronze member should never have to wonder what to do next —
+// every step is either done, the one current required action, or a locked
+// preview of what comes after. Only the first incomplete step gets a CTA;
+// everything after it is visibly "up next" but not yet actionable.
+function OnboardingChecklist({ student, locale }: { student: any; locale: string }) {
+  const guarantors: any[] = (student?.guarantors || []).filter((g: any) => g && g.id)
+  const hasLiveGuarantor = guarantors.some(g => g.status === 'active' || g.status === 'pending_invitation')
+
+  const profileFields = [
+    student?.first_name, student?.last_name, student?.email, student?.phone_primary,
+    student?.city, student?.nationality, student?.academic_level, student?.date_of_birth,
+  ]
+  const profileComplete = profileFields.every(Boolean)
+
+  type Step = { key: string; label: Record<string, string>; done: boolean; to: string; cta: Record<string, string> }
+  const steps: Step[] = [
+    { key: 'membership', label: { en: 'Membership Approved', fr: 'Adhésion approuvée', ar: 'تمت الموافقة على العضوية' }, done: true, to: '', cta: { en: '', fr: '', ar: '' } },
+    { key: 'forsaId', label: { en: 'FORSA ID Issued', fr: 'Identifiant FORSA émis', ar: 'تم إصدار رقم FORSA' }, done: true, to: '', cta: { en: '', fr: '', ar: '' } },
+    { key: 'pass', label: { en: 'Digital Pass Issued', fr: 'Carte numérique émise', ar: 'تم إصدار البطاقة الرقمية' }, done: true, to: '', cta: { en: '', fr: '', ar: '' } },
+    {
+      key: 'profile', label: { en: 'Complete Profile', fr: 'Compléter le profil', ar: 'إكمال الملف الشخصي' },
+      done: profileComplete, to: '/profile',
+      cta: { en: 'Complete profile', fr: 'Compléter le profil', ar: 'إكمال الملف' },
+    },
+    {
+      key: 'guarantor', label: { en: 'Invite Guarantor', fr: 'Inviter un garant', ar: 'دعوة ضامن' },
+      done: hasLiveGuarantor, to: '/guarantor',
+      cta: { en: 'Invite a guarantor', fr: 'Inviter un garant', ar: 'دعوة ضامن' },
+    },
+    {
+      key: 'apply', label: { en: 'Submit Tuition Facilitation Request', fr: 'Soumettre une demande de facilitation', ar: 'تقديم طلب تيسير المعاليم' },
+      done: false, to: '/apply',
+      cta: { en: 'Apply now', fr: 'Postuler maintenant', ar: 'تقدم الآن' },
+    },
+  ]
+
+  const nextStep = steps.find(s => !s.done)
+
+  return (
+    <Card>
+      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+        {locale === 'ar' ? 'رحلتك مع FORSA' : locale === 'fr' ? 'Votre parcours FORSA' : 'Your FORSA Journey'}
+      </p>
+      <div className="space-y-2.5">
+        {steps.map(step => (
+          <div key={step.key} className="flex items-center gap-2.5">
+            {step.done
+              ? <CheckCircle size={17} className="text-teal-500 flex-shrink-0" />
+              : <Circle size={17} className={step.key === nextStep?.key ? 'text-navy-700 flex-shrink-0' : 'text-gray-300 flex-shrink-0'} />}
+            <span className={`text-sm ${step.done ? 'text-gray-400 line-through' : step.key === nextStep?.key ? 'text-gray-900 font-semibold' : 'text-gray-400'}`}>
+              {step.label[locale] || step.label.en}
+            </span>
+          </div>
+        ))}
+      </div>
+      {nextStep && (
+        <Link to={nextStep.to}
+          className="btn-teal w-full mt-4 flex items-center justify-center gap-1.5">
+          {nextStep.cta[locale] || nextStep.cta.en} <ArrowRight size={14} />
+        </Link>
+      )}
+    </Card>
   )
 }
 

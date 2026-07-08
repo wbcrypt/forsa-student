@@ -16,6 +16,7 @@ import PaymentsPage from './pages/payments/PaymentsPage'
 import ProfilePage from './pages/profile/ProfilePage'
 import NotificationsPage from './pages/notifications/NotificationsPage'
 import PassPage from './pages/pass/PassPage'
+import GuarantorPage from './pages/guarantor/GuarantorPage'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth()
@@ -67,6 +68,7 @@ function AppRoutes() {
             journey now: Bronze -> /apply -> AI interview -> submit. */}
         <Route path="application/new" element={<Navigate to="/apply" replace />} />
         <Route path="documents" element={<DocumentsPage />} />
+        <Route path="guarantor" element={<GuarantorPage />} />
         <Route path="payments" element={<PaymentsPage />} />
         <Route path="profile" element={<ProfilePage />} />
         <Route path="notifications" element={<NotificationsPage />} />

@@ -100,6 +100,10 @@ export const studentApi = {
   // instead, which resolves the student id server-side from the JWT identity and
   // spans every payment across every application/financing period, not just one.
   getMyPayments: () => api.get('/students/me/payments'),
+  // Phase 10 — self-service guarantor invitation, no staff action required.
+  addGuarantor: (data: { firstName: string; lastName: string; email: string; relationship?: string; phone?: string }) =>
+    api.post('/students/me/guarantors', data),
+  resendGuarantorInvite: (guarantorId: string) => api.post(`/students/me/guarantors/${guarantorId}/resend-invite`),
 }
 
 // ─── Digital Student Pass (Phase 2 T-205/T-206) ───────────────────────────────
@@ -122,6 +126,8 @@ export const applicationApi = {
   // every real student. Self-scoped: verifies the caller owns this
   // application server-side.
   getStatusHistory: (id: string) => api.get(`/applications/me/${id}/status-history`),
+  // Phase 10 — Waiting List Experience.
+  getQueuePosition: (id: string) => api.get(`/applications/me/${id}/queue-position`),
 }
 
 // ─── Universities ─────────────────────────────────────────────────────────────

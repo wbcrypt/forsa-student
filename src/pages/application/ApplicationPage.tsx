@@ -4,7 +4,7 @@ import { useAuth } from '../../context/AuthContext'
 import { useLocale } from '../../hooks/useLocale'
 import { studentApi, applicationApi } from '../../lib/api'
 import { StatusBadge, Card, Spinner, EmptyState } from '../../components/ui'
-import { FileText, ChevronRight, Clock, CheckCircle, AlertCircle } from 'lucide-react'
+import { FileText, ChevronRight, Clock, CheckCircle, AlertCircle, Hourglass, ListChecks } from 'lucide-react'
 import { format } from 'date-fns'
 
 const PIPELINE_STAGES = [
@@ -59,6 +59,13 @@ function ApplicationDetail({ app }: { app: any }) {
 
   const isApproved = ['approved_level1', 'approved_level2', 'approved_level3'].includes(app.current_status)
   const isRejected = app.current_status === 'rejected'
+  const isWaitingList = app.current_status === 'capital_queue'
+
+  const { data: queuePosition } = useQuery({
+    queryKey: ['queue-position', app.id],
+    queryFn: () => applicationApi.getQueuePosition(app.id).then(r => r.data),
+    enabled: isWaitingList,
+  })
 
   return (
     <div className="space-y-5">
@@ -166,6 +173,48 @@ function ApplicationDetail({ app }: { app: any }) {
           </div>
 
           <Link to="/apply" className="btn-teal w-full py-3 flex items-center justify-center">{t('applyAgain')}</Link>
+        </div>
+      )}
+
+      {/* Phase 10 — Waiting List Experience. capital_queue is explicitly
+          not a rejection; a waitlisted student should never feel
+          abandoned or left with just "you are on the waiting list." */}
+      {isWaitingList && (
+        <div className="space-y-3">
+          <div className="bg-yellow-50 border border-yellow-200 rounded-2xl p-5">
+            <div className="flex items-center gap-3 mb-3">
+              <Hourglass size={24} className="text-yellow-700 flex-shrink-0" />
+              <p className="font-bold text-yellow-800">{t('waitingListTitle')}</p>
+            </div>
+            <p className="text-sm text-yellow-700 leading-relaxed">{t('waitingListDesc')}</p>
+          </div>
+
+          <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4">
+            <p className="text-sm text-amber-700 leading-relaxed">🥉 {t('waitingListBronze')}</p>
+          </div>
+
+          {queuePosition?.inQueue && queuePosition.position && (
+            <Card>
+              <div className="flex items-center gap-2 mb-1">
+                <ListChecks size={16} className="text-navy-700" />
+                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">{t('waitingListPosition')}</p>
+              </div>
+              <p className="text-2xl font-bold text-gray-900">
+                #{queuePosition.position} <span className="text-sm font-normal text-gray-400">{t('waitingListOf')} {queuePosition.total}</span>
+              </p>
+              <p className="text-xs text-gray-400 mt-1">{t('waitingListPositionDesc')}</p>
+            </Card>
+          )}
+
+          <div className="bg-navy-50 border border-navy-100 rounded-2xl p-4">
+            <p className="text-xs font-semibold text-navy-700 mb-1">{t('waitingListNext')}</p>
+            <p className="text-sm text-navy-600 leading-relaxed">{t('waitingListNextDesc')}</p>
+          </div>
+
+          <div className="bg-white border border-gray-100 rounded-2xl p-4">
+            <p className="text-xs font-semibold text-gray-500 mb-1">{t('waitingListWhileYouWait')}</p>
+            <p className="text-sm text-gray-600 leading-relaxed">{t('waitingListWhileYouWaitDesc')}</p>
+          </div>
         </div>
       )}
 
