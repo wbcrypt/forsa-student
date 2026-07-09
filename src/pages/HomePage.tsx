@@ -157,7 +157,7 @@ function NextActionCard({ status, hasApplication, schedule, locale }: {
     action = {
       icon: Clock,
       title: locale === 'ar' ? 'أنت على قائمة الانتظار' : locale === 'fr' ? "Vous êtes sur liste d'attente" : "You're on the waiting list",
-      desc: locale === 'ar' ? 'لم يتم رفضك — طلبك في الانتظار حتى يتوفر التمويل. عضويتك البرونزية نشطة بالكامل.' : locale === 'fr' ? "Vous n'avez pas été refusé — votre demande attend que des fonds soient disponibles. Votre adhésion Bronze reste pleinement active." : "You haven't been rejected — your request is waiting for funding to become available. Your Bronze membership stays fully active.",
+      desc: locale === 'ar' ? 'لم يتم رفضك — طلبك في الانتظار حتى تتوفر الأموال اللازمة. عضويتك البرونزية نشطة بالكامل.' : locale === 'fr' ? "Vous n'avez pas été refusé — votre demande attend que des fonds soient disponibles. Votre adhésion Bronze reste pleinement active." : "You haven't been rejected — your request is waiting for funding to become available. Your Bronze membership stays fully active.",
       cta: locale === 'ar' ? 'عرض التفاصيل' : locale === 'fr' ? 'Voir les détails' : 'View details',
       to: '/application',
     }

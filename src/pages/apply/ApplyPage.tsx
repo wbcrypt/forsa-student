@@ -12,6 +12,20 @@ import { Alert, Card, FormField, Spinner, StepProgress } from '../../components/
 import { ChevronRight, ChevronLeft } from 'lucide-react'
 import clsx from 'clsx'
 
+// QA-10 fix — was a plain free-text input capped at 2 characters showing
+// the raw ISO code (e.g. "TN"), unlike the Profile page's proper labeled
+// dropdown. Same list as ProfilePage.tsx's NATIONALITIES, with AR/EN
+// labels added since this wizard (unlike the Profile page at the time it
+// was written) is used in all three languages.
+const NATIONALITIES: { value: string; label: Record<Locale, string> }[] = [
+  { value: '', label: { en: '—', fr: '—', ar: '—' } },
+  { value: 'TN', label: { en: 'Tunisian', fr: 'Tunisienne', ar: 'تونسية' } },
+  { value: 'FR', label: { en: 'French', fr: 'Française', ar: 'فرنسية' } },
+  { value: 'DZ', label: { en: 'Algerian', fr: 'Algérienne', ar: 'جزائرية' } },
+  { value: 'MA', label: { en: 'Moroccan', fr: 'Marocaine', ar: 'مغربية' } },
+  { value: 'LY', label: { en: 'Libyan', fr: 'Libyenne', ar: 'ليبية' } },
+]
+
 // Phase 14 (Final Case Flow Refinement) — "No document upload during the
 // application. Documents are verified physically during the meeting."
 // The Documents step from the workflow alignment fix is removed; CIN and
@@ -239,7 +253,9 @@ export default function ApplyPage() {
                 <input className="input" value={data.city} onChange={set('city')} placeholder="Tunis" />
               </FormField>
               <FormField label={locale === 'ar' ? 'الجنسية' : locale === 'fr' ? 'Nationalité' : 'Nationality'}>
-                <input className="input uppercase" value={data.nationality} onChange={set('nationality')} maxLength={2} placeholder="TN" />
+                <select className="input" value={data.nationality} onChange={set('nationality')}>
+                  {NATIONALITIES.map(n => <option key={n.value} value={n.value}>{n.label[locale] || n.label.en}</option>)}
+                </select>
               </FormField>
             </div>
           </Card>

@@ -41,7 +41,7 @@ const translations: Record<Locale, Record<string, string>> = {
     // Waiting List (Phase 10) — capital_queue is explicitly not a rejection;
     // a waitlisted student should never feel abandoned.
     waitingListTitle: "You're on the FORSA Waiting List",
-    waitingListDesc: "Your Tuition Facilitation Plan was reviewed positively — you have NOT been rejected. FORSA's available capital is fully allocated right now, so your request is in line for the next round of funding.",
+    waitingListDesc: "Your Tuition Facilitation Plan was reviewed positively — you have NOT been rejected. FORSA's available capital is fully allocated right now, so your request is in line for the next allocation cycle.",
     waitingListBronze: 'Your Bronze membership stays fully active while you wait — nothing changes about your FORSA ID or Digital Pass.',
     waitingListPosition: 'Estimated position', waitingListOf: 'of',
     waitingListPositionDesc: 'in the queue, based on when your request joined it.',
@@ -136,7 +136,7 @@ const translations: Record<Locale, Record<string, string>> = {
     bronzeNext: 'Et maintenant ?', bronzeNextDesc: 'Vous pouvez soumettre une nouvelle demande de plan de facilitation dès que votre situation évolue — votre FORSA Score et votre historique ne sont jamais perdus.',
     bronzeContact: 'Des questions ? Contactez', applyAgain: 'Postuler à nouveau',
     waitingListTitle: "Vous êtes sur la liste d'attente FORSA",
-    waitingListDesc: "Votre plan de facilitation a été évalué positivement — vous n'avez PAS été refusé. Le capital disponible de FORSA est actuellement entièrement alloué, votre demande est donc en file d'attente pour le prochain cycle de financement.",
+    waitingListDesc: "Votre plan de facilitation a été évalué positivement — vous n'avez PAS été refusé. Le capital disponible de FORSA est actuellement entièrement alloué, votre demande est donc en file d'attente pour le prochain cycle d'allocation.",
     waitingListBronze: 'Votre adhésion Bronze reste pleinement active pendant votre attente — rien ne change pour votre identifiant FORSA ou votre carte numérique.',
     waitingListPosition: 'Position estimée', waitingListOf: 'sur',
     waitingListPositionDesc: 'dans la file, selon la date à laquelle votre demande y est entrée.',
@@ -226,7 +226,7 @@ const translations: Record<Locale, Record<string, string>> = {
     bronzeNext: 'ماذا بعد؟', bronzeNextDesc: 'يمكنك تقديم طلب خطة تيسير جديد متى تغيرت ظروفك — نقاط FORSA وسجل ملفك لا يُفقدان أبداً.',
     bronzeContact: 'أسئلة؟ تواصل مع', applyAgain: 'التقديم مرة أخرى',
     waitingListTitle: 'أنت على قائمة انتظار FORSA',
-    waitingListDesc: 'تمت مراجعة خطة تيسير المعاليم الخاصة بك بشكل إيجابي — لم يتم رفضك. رأس المال المتاح لدى FORSA مخصص بالكامل حالياً، لذا طلبك في قائمة الانتظار لجولة التمويل القادمة.',
+    waitingListDesc: 'تمت مراجعة خطة تيسير المعاليم الخاصة بك بشكل إيجابي — لم يتم رفضك. رأس المال المتاح لدى FORSA مخصص بالكامل حالياً، لذا طلبك في قائمة الانتظار لدورة التخصيص القادمة.',
     waitingListBronze: 'تبقى عضويتك البرونزية نشطة بالكامل أثناء الانتظار — لا يتغير شيء بخصوص رقم FORSA أو بطاقتك الرقمية.',
     waitingListPosition: 'الترتيب المقدر', waitingListOf: 'من',
     waitingListPositionDesc: 'في قائمة الانتظار، بناءً على وقت انضمام طلبك إليها.',

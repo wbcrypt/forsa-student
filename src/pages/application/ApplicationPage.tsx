@@ -288,7 +288,10 @@ function ApplicationDetail({ app }: { app: any }) {
           <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Activation Meeting</p>
           <div className="space-y-1.5 text-sm">
             <p><span className="text-gray-500">Reference:</span> <span className="font-medium text-gray-900">{timeline.meeting.reference_number}</span></p>
-            <p><span className="text-gray-500">Date & Time:</span> <span className="font-medium text-gray-900">{new Date(timeline.meeting.scheduled_at).toLocaleString()}</span></p>
+            {/* QA-4 fix — explicit Africa/Tunis rather than the browser's
+                own local timezone, so this always matches the meeting
+                email regardless of the viewer's device timezone. */}
+            <p><span className="text-gray-500">Date & Time:</span> <span className="font-medium text-gray-900">{new Date(timeline.meeting.scheduled_at).toLocaleString('fr-TN', { timeZone: 'Africa/Tunis' })}</span></p>
             <p><span className="text-gray-500">Location:</span> <span className="font-medium text-gray-900">{timeline.meeting.office_location}</span></p>
             {timeline.meeting.special_instructions && (
               <p className="text-xs text-gray-500 mt-2">{timeline.meeting.special_instructions}</p>

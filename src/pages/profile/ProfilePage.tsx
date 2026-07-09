@@ -185,7 +185,11 @@ export default function ProfilePage() {
               <input type="number" className="input" value={form.monthlyIncome}
                 onChange={e => setForm(f => ({ ...f, monthlyIncome: e.target.value }))} />
             </FormField>
-            <FormField label="Existing Loans (TND)">
+            {/* QA-7 fix — "Existing Loans" reads as banned terminology
+                per FORSA_BRAND_GUIDE.md §10 (never "loan"/"credit"). This
+                field is about the student's own other monthly debt
+                obligations, not a FORSA product. */}
+            <FormField label="Other Monthly Debt Obligations (TND)">
               <input type="number" className="input" value={form.existingLoansAmount}
                 onChange={e => setForm(f => ({ ...f, existingLoansAmount: e.target.value }))} />
             </FormField>
